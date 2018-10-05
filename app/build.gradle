@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+android {
+    compileSdkVersion 22
+    defaultConfig {
+        applicationId "otmsapp.ping"
+        minSdkVersion 18
+        targetSdkVersion 22
+        versionCode 1
+        versionName "v1.0.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"//Kotlin支持
+    implementation 'com.android.support:appcompat-v7:22.2.1'
+    implementation 'com.google.code.gson:gson:2.8.1'
+    //定位
+    implementation 'com.amap.api:location:latest.integration'
+    //地图
+    implementation 'com.amap.api:3dmap:latest.integration'
+}

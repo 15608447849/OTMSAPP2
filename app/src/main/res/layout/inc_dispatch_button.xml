@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_load_all"
+            style="@style/inc_dispatch_button_public"
+            android:text="装载全部" />
+        <Button
+            android:id="@+id/btn_abnormal"
+            style="@style/inc_dispatch_button_public"
+            android:text="提交货差" />
+        <Button
+            android:id="@+id/btn_add_recycle"
+            style="@style/inc_dispatch_button_public"
+            android:text="回收列表" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_take_out"
+            style="@style/inc_dispatch_button_public"
+            android:text="开始启程" />
+        <Button
+            android:id="@+id/btn_ake_back"
+            style="@style/inc_dispatch_button_public"
+            android:text="返程回仓" />
+    </LinearLayout>
+</LinearLayout>

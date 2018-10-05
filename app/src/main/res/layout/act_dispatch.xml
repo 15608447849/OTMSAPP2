@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- 头部-->
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        style="@style/title_size_color">
+        <!--logo-->
+        <ImageView
+            android:id="@+id/iv_logo"
+            android:layout_width="@dimen/dp120"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_logo"
+            android:padding="@dimen/dp3"
+            />
+        <!--菜单图片-->
+        <ImageView
+            android:id="@+id/iv_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_menu"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/dp10"
+            />
+        <!--当前调度状态文本-->
+        <TextView
+            android:id="@+id/tv_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="暂无调度作业"
+            android:textSize="18sp"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:layout_margin="@dimen/dp10"
+            android:layout_toEndOf="@id/iv_logo"
+            android:layout_toStartOf="@id/iv_menu"
+            style="@style/textview_marquee"
+            />
+    </RelativeLayout>
+    <!-- 操作区下拉展开按钮 -->
+    <RelativeLayout
+        android:id="@+id/rl_drop_down_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rl_title"
+        android:background="#C9C9C9"
+        android:visibility="visible">
+        <TextView
+            android:id="@+id/tv_drop_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="点击展开"
+            android:textSize="12dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_drop_down"
+            android:layout_toEndOf="@id/tv_drop_down"
+            />
+    </RelativeLayout>
+    <!-- 操作区-->
+    <LinearLayout
+        android:id="@+id/rl_dispatch_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/rl_drop_down_check"
+        android:visibility="gone">
+        <include layout="@layout/inc_input_code"/>
+        <include layout="@layout/inc_dispatch_button"/>
+    </LinearLayout>
+    <!-- 操作区收起按钮 -->
+    <RelativeLayout
+        android:id="@+id/rl_pull_up_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_below="@id/rl_dispatch_area"
+        >
+        <TextView
+            android:id="@+id/tv_pull_pu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="点击收起"
+            android:textSize="12dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_drop_down"
+            android:rotation="180"
+            android:layout_toEndOf="@id/tv_pull_pu"
+            />
+    </RelativeLayout>
+    <!--列表显示区-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/rl_pull_up_check">
+        <include layout="@layout/inc_dispatch_tab"/>
+        <ListView
+            android:id="@+id/lv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null" />
+    </LinearLayout>
+</RelativeLayout>

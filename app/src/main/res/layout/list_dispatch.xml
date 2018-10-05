@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/list_item_container1">
+    <RelativeLayout
+        style="@style/list_item_container2">
+
+        <RelativeLayout
+            android:id="@+id/rl_title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp60"
+            style="@style/list_item_margin_lr">
+            <!-- 勾选框 -->
+            <ImageView
+                android:id="@+id/iv_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_checkbox_off"
+                />
+            <!-- 门店名字-->
+            <TextView
+                android:id="@+id/tv_store_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="门店名-长沙湘雅店"
+                android:layout_toEndOf="@id/iv_checkbox"
+                android:layout_margin="@dimen/dp10"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                style="@style/list_item_text_1"
+                />
+            <ImageView
+                android:id="@+id/iv_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wait"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
+        <View
+            android:id="@+id/segment_line"
+            android:layout_below="@id/rl_title"
+            style="@style/segment_line" />
+        <LinearLayout
+            android:id="@+id/ll_content"
+            android:layout_below="@id/segment_line"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp35"
+            style="@style/list_item_margin_lr"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:id="@+id/tv_order"
+                android:layout_width="@dimen/dp0"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="配送顺序: 15"
+                />
+            <TextView
+                android:id="@+id/tv_state"
+                android:layout_width="@dimen/dp0"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="已装载: [0/10]"
+                />
+        </LinearLayout>
+        <View
+            style="@style/segment_line"
+            android:layout_below="@id/ll_content"
+            />
+    </RelativeLayout>
+</FrameLayout>

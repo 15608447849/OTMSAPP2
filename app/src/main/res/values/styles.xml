@@ -1,0 +1,73 @@
+<resources>
+
+    <!-- title 颜色大小 -->
+    <style name="title_size_color">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp45</item>
+        <item name="android:background">#3669c7</item>
+    </style>
+    <!-- 调度区按钮公用样式-->
+    <style name="inc_dispatch_button_public">
+        <item name="android:layout_width">@dimen/dp0</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">@dimen/dp3</item>
+        <item name="android:padding">@dimen/dp3</item>
+        <item name="android:layout_height">@dimen/dp45</item>
+    </style>
+
+    <!-- 调度列表tab样式 -->
+    <style name="inc_dispatch_tab_rbtn_public">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/dp45</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:button">@null</item>
+        <item name="android:layout_margin">@dimen/dp2</item>
+        <item name="android:background">@drawable/ic_rbtn_bg_selector</item>
+        <item name="android:textColor">@drawable/ic_rbtn_text_color_selector</item>
+    </style>
+
+    <!--列表item 整块容器 -->
+    <style name="list_item_container1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/list_item_bg_color1</item>
+        <item name="android:paddingBottom">@dimen/dp15</item>
+    </style>
+    <!--列表item 整块容器，配合1 凸显出一块底部颜色色差-->
+    <style name="list_item_container2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/list_item_bg_color2</item>
+    </style>
+
+    <!--列表子项 左右固定边距-->
+    <style name="list_item_margin_lr">
+        <item name="android:layout_marginLeft">@dimen/dp10</item>
+        <item name="android:layout_marginRight">@dimen/dp10</item>
+    </style>
+
+
+    <!--列表item 标题文本控件通用样式-->
+    <style name="list_item_text_1" >
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_color_1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+
+    <!-- 分割线 水平 -->
+    <style name="segment_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/dp1</item>
+        <item name="android:background">@color/segment_line</item>
+    </style>
+    <!-- tv 走马灯 请使用   tv.setSelected(true); 开启滚动-->
+    <style name="textview_marquee">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+    </style>
+</resources>

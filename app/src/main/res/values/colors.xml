@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--list 列表容器 背景颜色-->
+    <color name="list_item_bg_color1">#f5f5f5</color>
+    <color name="list_item_bg_color2">#ffffff</color>
+
+    <color name="text_color_1">#333333</color>
+    <color name="segment_line">#e6e6e6</color>
+</resources>
