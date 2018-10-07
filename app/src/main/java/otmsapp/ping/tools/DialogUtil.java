@@ -50,10 +50,15 @@ public class DialogUtil {
                 });
     }
 
-    public static AlertDialog dialogSimple2(Context context, String msg, String sureText, final Action0 sure, String cancelText, final Action0 cancel) {
+    public static AlertDialog dialogSimple2(Context context,String msg, String sureText, final Action0 sure) {
+        //弹出提示
+        return dialogSimple2(context,null,msg,sureText,sure,null,null);
+    }
+
+    public static AlertDialog dialogSimple2(Context context,String title, String msg, String sureText, final Action0 sure, String cancelText, final Action0 cancel) {
         //弹出提示
         return build(context,
-                "提示",
+                title==null?"提示":title,
                 msg,
                 R.drawable.ic_warn,
                 sureText==null?"确定":sureText,

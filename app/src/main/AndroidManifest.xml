@@ -32,6 +32,8 @@
         <activity android:name=".mvp.view.DispatchActivity" android:launchMode="singleInstance" />
         <!--回收-->
         <activity android:name=".mvp.view.RecycleActivity"/>
+        <!--预警-->
+        <activity android:name=".mvp.view.WarnActivity"/>
     </application>
 
     <!--允许程序打开网络套接字-->

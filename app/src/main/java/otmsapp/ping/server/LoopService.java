@@ -4,10 +4,8 @@ import android.content.Intent;
 
 import otmsapp.ping.R;
 import otmsapp.ping.entitys.UserInfo;
-import otmsapp.ping.entitys.dispatch.Dispatch;
 import otmsapp.ping.entitys.dispatch.VehicleInfo;
 import otmsapp.ping.entitys.map.GdMapLocation;
-import otmsapp.ping.log.LLog;
 import otmsapp.ping.mvp.view.DispatchActivity;
 import otmsapp.ping.tools.HearServer;
 
@@ -55,7 +53,7 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
         UserInfo userInfo = new UserInfo().fetch();
         VehicleInfo vehicleInfo = new VehicleInfo().fetch();
 
-        if (userInfo!=null){
+        if (userInfo!=null && vehicleInfo!=null){
             if (!location.isStart()) location.startLocation();
         }else{
             if (location.isStart()) location.stopLocation();
@@ -64,8 +62,10 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
         if (vehicleInfo!=null){
             dispatchSyncHelper.sync(vehicleInfo);
         }
+        if (userInfo!=null){
+            dispatchPullHelper.pull(userInfo,vehicleInfo);
+        }
 
-        dispatchPullHelper.pull(userInfo,vehicleInfo);
     }
 
     @Override
@@ -78,5 +78,12 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void notifyWarn() {
+        //发送通知
+
+
     }
 }

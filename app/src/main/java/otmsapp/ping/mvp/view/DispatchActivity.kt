@@ -15,12 +15,10 @@ import otmsapp.ping.adapter.DispatchListAdapter
 import otmsapp.ping.entitys.IO
 import otmsapp.ping.entitys.action.ClickManager
 import otmsapp.ping.entitys.dispatch.Dispatch
-import otmsapp.ping.entitys.scanner.ScannerApiThread
 import otmsapp.ping.entitys.scanner.ScannerCallback
-import otmsapp.ping.entitys.scanner.ScannerApi_SEUIC
 import otmsapp.ping.log.LLog
-import otmsapp.ping.mvp.presenter.DispatchPresenter
 import otmsapp.ping.mvp.contract.DispatchContract
+import otmsapp.ping.mvp.presenter.DispatchPresenter
 import otmsapp.ping.tools.AppUtil
 import otmsapp.ping.tools.DialogUtil
 import otmsapp.ping.tools.JsonUti
@@ -91,7 +89,7 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
         //列表适配器
         adapter= DispatchListAdapter( this)
         lv_content.adapter = adapter
-        lv_content.setOnItemClickListener(this)
+        lv_content.onItemClickListener = this
         //默认选中
         rbtn_load.toggle()
     }

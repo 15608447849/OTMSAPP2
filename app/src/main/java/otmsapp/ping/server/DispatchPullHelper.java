@@ -18,13 +18,8 @@ import otmsapp.ping.entitys.except.AbnormalList;
 import otmsapp.ping.entitys.except.AbnormalListSync;
 import otmsapp.ping.entitys.map.Trace;
 import otmsapp.ping.entitys.map.TraceSync;
-import otmsapp.ping.entitys.recycler.RecyclerBox;
 import otmsapp.ping.entitys.recycler.RecyclerBoxList;
 import otmsapp.ping.entitys.recycler.RecyclerBoxListSync;
-import otmsapp.ping.log.LLog;
-import otmsapp.ping.mvp.model.AppInterfaceModel;
-import otmsapp.ping.tools.AppUtil;
-import otmsapp.ping.tools.JsonUti;
 
 /**
  * 获取调度单
@@ -34,7 +29,7 @@ public class DispatchPullHelper extends DispatchOperation {
 
     public void pull(UserInfo userInfo,VehicleInfo vehicleInfo){
         //获取用户信息
-        if (userInfo == null )  return;
+        if (userInfo == null ) return;
         String traceNo = "";
         //获取本地调度信息
         Dispatch dispatch = new Dispatch().fetch();

@@ -7,25 +7,22 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import otmsapp.ping.R
-import otmsapp.ping.entitys.recycler.RecyclerBox
-import otmsapp.ping.tools.StrUtil
+import otmsapp.ping.entitys.warn.WarnItem
 import otmsapp.ping.tools.TimeUtil
 
-class RecycleListAdapter(var context: Context) : BaseAdapter(){
-
-
+class WarnListAdapter(var context: Context) : BaseAdapter(){
 
     /**
-     * 回收列表
+     * 预警列表
      */
-    var data:MutableList<RecyclerBox>? = null
+    var data:MutableList<WarnItem>? = null
 
     override fun getItemId(position: Int): Long {
         return position.toLong();
     }
 
     //获取列表数据
-    override fun getItem(position: Int): RecyclerBox? {
+    override fun getItem(position: Int): WarnItem? {
         return data?.get(position)
     }
 
@@ -36,27 +33,24 @@ class RecycleListAdapter(var context: Context) : BaseAdapter(){
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val vh = if (convertView == null) ViewHolder(context = context) else convertView.tag as ViewHolder
 
-        val recyclerBox = getItem(position)
-
-        vh.codeBar.text = StrUtil.format("[ %s ]",recyclerBox?.boxNo)
-        vh.type.text = StrUtil.format("[%s]",when(recyclerBox?.type){
-            1 -> "回收箱"
-            2 -> "退货箱"
-            3 -> "调剂箱"
-            else -> ""
-        })
-        vh.time.text = TimeUtil.formatUTC(recyclerBox?.time!!,"MM/dd HH:mm:ss")
-
+        val warn = getItem(position)
+        vh.time.text = TimeUtil.formatUTC(warn?.time!!,"MM/dd HH:mm:ss")
+        vh.code.text = warn.code
+        vh.type.text = warn.type
+        vh.value.text = warn.value
+        vh.range.text = warn.range
         return vh.itemView
     }
 
 
     private class ViewHolder(context: Context){
-        val itemView = LayoutInflater.from(context).inflate(R.layout.list_recyclebox,null)!!
+        val itemView = LayoutInflater.from(context).inflate(R.layout.list_warn,null)!!
 
-        val codeBar = itemView.findViewById(R.id.tv_code) as TextView
-        val type = itemView.findViewById(R.id.tv_type) as TextView
         val time = itemView.findViewById(R.id.tv_time) as TextView
+        val code = itemView.findViewById(R.id.tv_code) as TextView
+        val type = itemView.findViewById(R.id.tv_type) as TextView
+        val value = itemView.findViewById(R.id.tv_value) as TextView
+        val range = itemView.findViewById(R.id.tv_range) as TextView
 
         init {
             itemView.tag = this

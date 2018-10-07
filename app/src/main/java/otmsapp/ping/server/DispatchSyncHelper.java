@@ -1,13 +1,14 @@
 package otmsapp.ping.server;
 
-import android.content.Context;
-
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import cn.hy.otms.rpcproxy.appInterface.WarnsDetailInfo;
+import cn.hy.otms.rpcproxy.appInterface.WarnsInfo;
 import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
-import otmsapp.ping.entitys.UserInfo;
 import otmsapp.ping.entitys.dispatch.Box;
 import otmsapp.ping.entitys.dispatch.Dispatch;
 import otmsapp.ping.entitys.dispatch.DispatchSync;
@@ -21,10 +22,10 @@ import otmsapp.ping.entitys.map.TraceSync;
 import otmsapp.ping.entitys.recycler.RecyclerBox;
 import otmsapp.ping.entitys.recycler.RecyclerBoxList;
 import otmsapp.ping.entitys.recycler.RecyclerBoxListSync;
-import otmsapp.ping.log.LLog;
-import otmsapp.ping.mvp.model.AppInterfaceModel;
+import otmsapp.ping.entitys.warn.WarnItem;
+import otmsapp.ping.entitys.warn.WarnList;
 import otmsapp.ping.tools.JsonUti;
-import otmsapp.ping.zerocice.IceIo;
+import otmsapp.ping.tools.StrUtil;
 
 public class DispatchSyncHelper extends DispatchOperation{
 
@@ -41,7 +42,9 @@ public class DispatchSyncHelper extends DispatchOperation{
     public void sync( VehicleInfo vehicleInfo){
 
         try {
-            long time = System.currentTimeMillis();
+//            long time = System.currentTimeMillis();
+            //预警信息同步
+            syncWarn(vehicleInfo);
             //异常信息同步
             syncAbnormal();
             //回收信息同步
@@ -55,6 +58,75 @@ public class DispatchSyncHelper extends DispatchOperation{
             e.printStackTrace();
         }
     }
+
+    //预警信息同步
+    private void syncWarn(VehicleInfo vehicleInfo) {
+        WarnList warnTag = new WarnList().fetch();
+
+        if (warnTag==null) return;
+
+        WarnsInfo warnsInfo = server.queryTimeLaterWarnInfoByDriver(vehicleInfo.carNumber,warnTag.timeStamp);
+
+        if (warnsInfo==null || warnsInfo.pendingWarnsNum == 0) return;
+
+            WarnItem state = null;
+            Iterator<WarnItem> it;
+            boolean isAdd;
+            boolean isNotify = false;
+
+            tag:for (WarnsDetailInfo warnsDetailInfo : warnsInfo.detailList){
+                isAdd = true;
+                it = warnTag.list.iterator();
+                while (it.hasNext()){
+                    state = it.next();
+                    if (state.code.equals(warnsDetailInfo.lpn)){ //相同箱子的预警信息
+
+                        if (warnsDetailInfo.ostatus == 1){  //已处理,移除
+                            it.remove();
+                            break tag;
+                        }else{
+                            isAdd = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (warnsDetailInfo.ostatus==1) continue;
+
+                if (isAdd) {
+                    state = new WarnItem();
+                    state.code = warnsDetailInfo.lpn;
+                }
+
+                state.type = "("+warnsDetailInfo.mtype+")";
+                state.value =
+                        (Double.parseDouble(warnsDetailInfo.wval) < Double.parseDouble(warnsDetailInfo.minval) ? "温度过低" : "温度超高")
+                                +"( "+warnsDetailInfo.wval+" )";
+                state.range = StrUtil.format("正常范围:%s - %s",warnsDetailInfo.minval,warnsDetailInfo.maxval);
+                state.time = warnsDetailInfo.timestamp;
+
+               if (isAdd) warnTag.list.add(state);
+
+               isNotify = true;
+            }
+
+            //按时间排序
+            Collections.sort(warnTag.list, new Comparator<WarnItem>() {
+                @Override
+                public int compare(WarnItem o1, WarnItem o2) {
+                    return (int) (o2.time - o1.time); //降序
+                }
+            });
+
+            if (warnTag.list.size()>0) warnTag.timeStamp = warnTag.list.get(0).time;
+
+            if (isNotify) {
+                warnTag.save();
+                if (callback!=null) callback.notifyWarn();
+            }
+
+        };
+
     //执行调度单同步
     private void executeDispatchSync(VehicleInfo vehicleInfo) {
 
@@ -172,6 +244,7 @@ public class DispatchSyncHelper extends DispatchOperation{
         }
         return  isChangeState;
     }
+
    //同步箱子
    private boolean syncBox(VehicleInfo vehicleInfo,Dispatch dispatch,Store store, DispatchSync dispatchSync){
             boolean isChangeState = false;//默认没有一个改变
@@ -265,6 +338,7 @@ public class DispatchSyncHelper extends DispatchOperation{
             }
         }
     }
+
     //检查本地轨迹与远程轨迹是否完成同步
     private boolean checkTraceFinish(VehicleInfo vehicleInfo){
         Trace trace = new Trace().fetch();
@@ -290,7 +364,6 @@ public class DispatchSyncHelper extends DispatchOperation{
         }
         return false;
     }
-
 
    //同步异常信息
     private void syncAbnormal() {
@@ -331,7 +404,6 @@ public class DispatchSyncHelper extends DispatchOperation{
 
     //检查异常信息
     private boolean checkAbnormal() {
-        boolean flag = false;
         AbnormalList abnormalList = new AbnormalList().fetch();
         AbnormalListSync abnormalListSync = new AbnormalListSync().fetch();
         if (abnormalList!=null && abnormalListSync!=null && abnormalList.list!=null && abnormalListSync.list!=null && abnormalList.list.size() == abnormalListSync.list.size()){

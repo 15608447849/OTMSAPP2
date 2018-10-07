@@ -1,9 +1,8 @@
 package otmsapp.ping.mvp.model;
 
-import java.util.Arrays;
-
 import cn.hy.otms.rpcproxy.appInterface.AppInterfaceServicePrx;
 import cn.hy.otms.rpcproxy.appInterface.DispatchInfo;
+import cn.hy.otms.rpcproxy.appInterface.WarnsInfo;
 import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
 import otmsapp.ping.entitys.except.Abnormal;
 import otmsapp.ping.entitys.recycler.RecyclerBox;
@@ -161,6 +160,18 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> {
         return null;
     }
 
+    /**
+     * 获取预警信息
+     */
+    public WarnsInfo queryTimeLaterWarnInfoByDriver(long trainNo, long time){
+        try {
+            printParam("预警数据",trainNo,time);
+            return getProxy().queryWarnsInfo(convert("TimeLater",2,time,trainNo));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 

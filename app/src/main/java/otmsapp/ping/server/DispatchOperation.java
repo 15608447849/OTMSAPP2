@@ -16,6 +16,7 @@ public class DispatchOperation{
 
     public interface Callback{
         void updateDispatch();
+        void notifyWarn();
     }
 
     Callback callback ;

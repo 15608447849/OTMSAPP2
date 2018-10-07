@@ -93,13 +93,13 @@ class DispatchListAdapter(var context: Context) : BaseAdapter(){
     }
 
     private class ViewHolder(context: Context){
-        val itemView: View = LayoutInflater.from(context).inflate(R.layout.list_dispatch,null)
+        val itemView = LayoutInflater.from(context).inflate(R.layout.list_dispatch,null)!!
 
-        val checkBox :ImageView = itemView.findViewById(R.id.iv_checkbox) as ImageView
-        val storeName :TextView = itemView.findViewById(R.id.tv_store_name) as TextView
-        val state :ImageView = itemView.findViewById(R.id.iv_state) as ImageView
-        val order :TextView = itemView.findViewById(R.id.tv_order) as TextView
-        val stateText :TextView = itemView.findViewById(R.id.tv_state) as TextView
+        val checkBox = itemView.findViewById(R.id.iv_checkbox) as ImageView
+        val storeName = itemView.findViewById(R.id.tv_store_name) as TextView
+        val state = itemView.findViewById(R.id.iv_state) as ImageView
+        val order = itemView.findViewById(R.id.tv_order) as TextView
+        val stateText = itemView.findViewById(R.id.tv_state) as TextView
 
         init {
             itemView.tag = this

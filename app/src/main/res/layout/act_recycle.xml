@@ -14,8 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rl_title"
-        android:paddingLeft="@dimen/dp10"
-        android:paddingRight="@dimen/dp10">
+        >
         <Button
             android:id="@+id/btn_store_select"
             android:layout_width="wrap_content"
@@ -44,8 +43,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_below="@id/rl_store"
-        android:paddingLeft="@dimen/dp10"
-        android:paddingRight="@dimen/dp10"
+
         >
         <RadioGroup
             android:id="@+id/rg_select"
@@ -93,8 +91,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/ll_option"
-        android:paddingLeft="@dimen/dp10"
-        android:paddingRight="@dimen/dp10">
+       >
         <TextView
             android:id="@+id/tv_info"
             android:layout_width="match_parent"
