@@ -1,8 +1,5 @@
 package otmsapp.ping.mvp.contract;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import otmsapp.ping.entitys.recycler.RecyclerBox;
@@ -10,9 +7,7 @@ import otmsapp.ping.mvp.basics.IPresenter;
 import otmsapp.ping.mvp.basics.IView;
 
 public class RecycleContract {
-    public interface Model{
 
-    }
     public interface View extends IView{
         //更新当前门店
         void updateStoreName(String storeName);
@@ -20,12 +15,15 @@ public class RecycleContract {
         void updateBoxInfo(String info);
         //刷新列表信息
         void refreshList(List<RecyclerBox> recyclerBoxes);
-
+        //打开门店列表
         void openStoreList(CharSequence[] storeNames);
     }
     public interface Presenter extends IPresenter<View> {
+        //初始化
         boolean init();
+        //设置当前选中门店下标
         void setCurrentStoreIndex(int curIndex);
+        //更新数据
         void updateData();
         //选择门店
         void selectStore();

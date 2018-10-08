@@ -92,6 +92,11 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
         lv_content.onItemClickListener = this
         //默认选中
         rbtn_load.toggle()
+
+        iv_menu.setOnClickListener {
+            //弹出菜单pop
+
+        }
     }
 
     override fun onResume() {
@@ -143,7 +148,6 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
     }
 
     override fun onItemClick(viewGroup: AdapterView<*>?, view: View?, position:Int, positionLong: Long) {
-        LLog.print("列表子项view,id: "+ view)
         if(adapter?.index == position){
             adapter?.index = -1
         } else{
@@ -172,13 +176,7 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
 
     override fun dialog(btnName:String?,message: String?, callback: DispatchContract.Presenter.Callback?) {
         runOnUiThread {
-
-            DialogUtil.dialogSimple2(this, message,btnName,object : DialogUtil.Action0{
-                override fun onAction0() {
-                    IO.run {callback?.onCallback()}
-                }
-            },
-                    "取消",null)
+            DialogUtil.dialogSimple2(this, message,btnName) { IO.run {callback?.onCallback()} }
         }
     }
 
