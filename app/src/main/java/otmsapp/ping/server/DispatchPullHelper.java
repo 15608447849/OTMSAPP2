@@ -20,6 +20,7 @@ import otmsapp.ping.entitys.map.Trace;
 import otmsapp.ping.entitys.map.TraceSync;
 import otmsapp.ping.entitys.recycler.RecyclerBoxList;
 import otmsapp.ping.entitys.recycler.RecyclerBoxListSync;
+import otmsapp.ping.entitys.warn.WarnList;
 
 /**
  * 获取调度单
@@ -28,25 +29,28 @@ public class DispatchPullHelper extends DispatchOperation {
 
 
     public void pull(UserInfo userInfo,VehicleInfo vehicleInfo){
-        //获取用户信息
-        if (userInfo == null ) return;
-        String traceNo = "";
-        //获取本地调度信息
-        Dispatch dispatch = new Dispatch().fetch();
+        try {
+            //获取用户信息
+            if (userInfo == null ) return;
+            String traceNo = "";
+            //获取本地调度信息
+            Dispatch dispatch = new Dispatch().fetch();
 //        LLog.print("调度信息: "+ JsonUti.javaBeanToJson(dispatch));
-        if (dispatch!=null ){
-            if (vehicleInfo!=null && dispatch.state <= Dispatch.STATE.TAKEOUT){
-                //装货中或者等待启程->获取本地调度任务车次号
-                traceNo = String.valueOf(vehicleInfo.carNumber);
-            }else{
-                return;
+            if (dispatch!=null ){
+                if (vehicleInfo!=null && dispatch.state <= Dispatch.STATE.TAKEOUT){
+                    //装货中或者等待启程->获取本地调度任务车次号
+                    traceNo = String.valueOf(vehicleInfo.carNumber);
+                }else{
+                    return;
+                }
             }
+            //获取远程调度信息 如果没有车次,获取新车次任务;
+            // 如果有车次,通知后台收到任务
+            boolean flag = dispatchInfoPause(server.dispatchInfoSync(userInfo.userId,traceNo));
+            if (!flag) pull(userInfo,vehicleInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        //获取远程调度信息 如果没有车次,获取新车次任务;
-        // 如果有车次,通知后台收到任务
-        boolean flag = dispatchInfoPause(server.dispatchInfoSync(userInfo.userId,traceNo));
-        if (!flag) pull(userInfo,vehicleInfo);
-
     }
 
     private boolean dispatchInfoPause(DispatchInfo result) {
@@ -139,9 +143,11 @@ public class DispatchPullHelper extends DispatchOperation {
         RecyclerBoxList recyclerBoxList = new RecyclerBoxList();
         //本地回收箱列表同步
         RecyclerBoxListSync recyclerBoxListSync = new RecyclerBoxListSync();
+        //预警信息
+        WarnList warnList = new WarnList();
 
         //保存
-        saveToSQLite(vehicleInfo,dispatch,dispatchSync,trace,traceSync,abnormalList,abnormalListSync,recyclerBoxList,recyclerBoxListSync);
+        saveToSQLite(vehicleInfo,dispatch,dispatchSync,trace,traceSync,abnormalList,abnormalListSync,recyclerBoxList,recyclerBoxListSync,warnList);
 //        LLog.print("已重置本地数据,耗时"+(System.currentTimeMillis() - time)+"毫秒");
         if (callback!=null) callback.updateDispatch();
     }

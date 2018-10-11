@@ -6,10 +6,11 @@ import cn.hy.otms.rpcproxy.appInterface.WarnsInfo;
 import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
 import otmsapp.ping.entitys.except.Abnormal;
 import otmsapp.ping.entitys.recycler.RecyclerBox;
+import otmsapp.ping.mvp.contract.WarnContract;
 import otmsapp.ping.tools.JsonUti;
 import otmsapp.ping.zerocice.IceServerAbs;
 
-public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> {
+public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model {
 
 
 
@@ -173,6 +174,16 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> {
         return null;
     }
 
+    @Override
+    public boolean handleWarn(String codeBar,long time){
+        try {
+            printParam("处理预警",codeBar,time);
+            return getProxy().updateWarnState(convert(codeBar,time));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 
 

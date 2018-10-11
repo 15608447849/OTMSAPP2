@@ -9,6 +9,8 @@ import otmsapp.ping.mvp.basics.IView;
  */
 public class MenuContract {
     public interface View extends IView {
+        void showWindows();
+        void dismissWindows();
        void bindPresenter(Presenter presenter);
        void unbindPresenter();
     }

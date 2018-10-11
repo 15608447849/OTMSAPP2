@@ -18,7 +18,9 @@ import otmsapp.ping.entitys.dispatch.Dispatch
 import otmsapp.ping.entitys.scanner.ScannerCallback
 import otmsapp.ping.log.LLog
 import otmsapp.ping.mvp.contract.DispatchContract
+import otmsapp.ping.mvp.contract.MenuContract
 import otmsapp.ping.mvp.presenter.DispatchPresenter
+import otmsapp.ping.mvp.presenter.MenuPresenter
 import otmsapp.ping.tools.AppUtil
 import otmsapp.ping.tools.DialogUtil
 import otmsapp.ping.tools.JsonUti
@@ -36,6 +38,10 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
     private val click = ClickManager()
 
     private val presenter  = DispatchPresenter()
+
+    private var menuPopWindow: MenuContract.View? = null
+
+    private val menuPresenter = MenuPresenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,19 +99,23 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
         //默认选中
         rbtn_load.toggle()
 
+        menuPopWindow = MenuPopWindow(this,rl_title)
+
         iv_menu.setOnClickListener {
             //弹出菜单pop
-
+            menuPopWindow?.showWindows()
         }
     }
 
     override fun onResume() {
         super.onResume()
         presenter.bindView(this)
+        menuPopWindow?.bindPresenter(menuPresenter)
         IO.run{presenter.validateDispatch()}
     }
 
     override fun onPause() {
+        menuPopWindow?.unbindPresenter()
         presenter.unbindView()
         super.onPause()
     }

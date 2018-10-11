@@ -6,6 +6,8 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 
+import otmsapp.ping.log.LLog;
+
 /**
  * Created by lzp on 2018/2/25.
  * 高德地图
@@ -44,12 +46,14 @@ public class GdMapLocation {
     public void startLocation() {
         mLocationClient.startLocation();
         isStart = true;
+        LLog.print("打开定位");
     }
 
     //停止定位
     public void stopLocation() {
         mLocationClient.stopLocation();
         isStart = false;
+        LLog.print("关闭定位");
     }
 
     public boolean isStart() {

@@ -10,6 +10,7 @@ import otmsapp.ping.entitys.map.Trace;
 import otmsapp.ping.entitys.map.TraceSync;
 import otmsapp.ping.entitys.recycler.RecyclerBoxList;
 import otmsapp.ping.entitys.recycler.RecyclerBoxListSync;
+import otmsapp.ping.entitys.warn.WarnList;
 import otmsapp.ping.mvp.model.AppInterfaceModel;
 
 public class DispatchOperation{
@@ -49,10 +50,11 @@ public class DispatchOperation{
         new Dispatch().remove();
         new DispatchSync().remove();
 
+        //清理预警信息
+        new WarnList().remove();
+
         //清理司机
         new VehicleInfo().remove();
-
-
     }
 
 }

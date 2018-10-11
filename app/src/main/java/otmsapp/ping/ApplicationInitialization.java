@@ -62,6 +62,7 @@ public class ApplicationInitialization extends LeeApplicationAbs{
         activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
         //应用运行时，保持屏幕高亮,不锁屏
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         //设定软键盘的输入法模式: 确保当前输入焦点是可见的
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         if (activity instanceof ScannerCallback){

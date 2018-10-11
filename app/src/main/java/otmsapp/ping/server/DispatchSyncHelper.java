@@ -24,6 +24,7 @@ import otmsapp.ping.entitys.recycler.RecyclerBoxList;
 import otmsapp.ping.entitys.recycler.RecyclerBoxListSync;
 import otmsapp.ping.entitys.warn.WarnItem;
 import otmsapp.ping.entitys.warn.WarnList;
+import otmsapp.ping.log.LLog;
 import otmsapp.ping.tools.JsonUti;
 import otmsapp.ping.tools.StrUtil;
 
@@ -42,7 +43,7 @@ public class DispatchSyncHelper extends DispatchOperation{
     public void sync( VehicleInfo vehicleInfo){
 
         try {
-//            long time = System.currentTimeMillis();
+            long time = System.currentTimeMillis();
             //预警信息同步
             syncWarn(vehicleInfo);
             //异常信息同步
@@ -53,7 +54,7 @@ public class DispatchSyncHelper extends DispatchOperation{
             syncTraceRecode(vehicleInfo);
             //调度信息同步
             executeDispatchSync(vehicleInfo);
-//            LLog.print("同步完毕: "+ (System.currentTimeMillis() - time)+" 毫秒");
+            LLog.print("同步完毕: "+ (System.currentTimeMillis() - time)+" 毫秒");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,12 +62,13 @@ public class DispatchSyncHelper extends DispatchOperation{
 
     //预警信息同步
     private void syncWarn(VehicleInfo vehicleInfo) {
+
         WarnList warnTag = new WarnList().fetch();
 
         if (warnTag==null) return;
 
-        WarnsInfo warnsInfo = server.queryTimeLaterWarnInfoByDriver(vehicleInfo.carNumber,warnTag.timeStamp);
-
+        WarnsInfo warnsInfo = server.queryTimeLaterWarnInfoByDriver(vehicleInfo.carNumber,warnTag.timeStamp-24*60*1000*1000);
+        LLog.print(JsonUti.javaBeanToJson(warnsInfo));
         if (warnsInfo==null || warnsInfo.pendingWarnsNum == 0) return;
 
             WarnItem state = null;
@@ -122,6 +124,7 @@ public class DispatchSyncHelper extends DispatchOperation{
 
             if (isNotify) {
                 warnTag.save();
+                LLog.print(JsonUti.javaBeanToJson(warnTag));
                 if (callback!=null) callback.notifyWarn();
             }
 

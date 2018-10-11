@@ -30,18 +30,22 @@
         <!--当前调度状态文本-->
         <TextView
             android:id="@+id/tv_state"
-            android:layout_width="match_parent"
+            style="@style/textview_marquee"
+            android:layout_width="123dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="暂无调度作业"
-            android:textSize="18sp"
-            android:textColor="#ffffff"
-            android:textStyle="bold"
-            android:layout_margin="@dimen/dp10"
+            android:layout_marginBottom="@dimen/dp10"
+            android:layout_marginEnd="25dp"
+            android:layout_marginLeft="@dimen/dp10"
+            android:layout_marginRight="@dimen/dp10"
+            android:layout_marginStart="@dimen/dp10"
+            android:layout_marginTop="@dimen/dp10"
             android:layout_toEndOf="@id/iv_logo"
             android:layout_toStartOf="@id/iv_menu"
-            style="@style/textview_marquee"
-            />
+            android:text="暂无调度作业"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </RelativeLayout>
     <!-- 操作区下拉展开按钮 -->
     <RelativeLayout

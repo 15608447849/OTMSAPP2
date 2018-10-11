@@ -61,9 +61,12 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!--电源管理-->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!--解锁-->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <!-- 震动 -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <!--可以直接弹出一个系统对话框让用户直接添加app到白名单-->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
 
 </manifest>

@@ -8,7 +8,7 @@ import otmsapp.ping.mvp.basics.IView;
 
 public class WarnContract {
     public interface Model{
-
+        boolean handleWarn(String codeBar,long time);
     }
     public interface View extends IView{
         //刷新列表信息
