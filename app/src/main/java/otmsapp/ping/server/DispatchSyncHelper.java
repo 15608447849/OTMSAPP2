@@ -67,8 +67,8 @@ public class DispatchSyncHelper extends DispatchOperation{
 
         if (warnTag==null) return;
 
-        WarnsInfo warnsInfo = server.queryTimeLaterWarnInfoByDriver(vehicleInfo.carNumber,warnTag.timeStamp-24*60*1000*1000);
-        LLog.print(JsonUti.javaBeanToJson(warnsInfo));
+        WarnsInfo warnsInfo = server.queryTimeLaterWarnInfoByDriver(vehicleInfo.carNumber,warnTag.timeStamp);
+
         if (warnsInfo==null || warnsInfo.pendingWarnsNum == 0) return;
 
             WarnItem state = null;

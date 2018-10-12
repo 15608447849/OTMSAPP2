@@ -72,7 +72,8 @@ class WarnActivity : Activity(), WarnContract.View {
      * 关闭进度条
      */
     override fun hindProgressBar() {
-        runOnUiThread { progressDialog?.hide() }    }
+        runOnUiThread { progressDialog?.hide() }
+    }
 
     /**
      * 打印消息

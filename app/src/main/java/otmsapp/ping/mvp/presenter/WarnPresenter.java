@@ -38,7 +38,7 @@ public class WarnPresenter extends PresenterViewBind<WarnContract.View> implemen
         boolean f = model.handleWarn(item.code, item.time);
         if (f) {
             WarnList list = new WarnList().fetch();
-            if (list == null) {
+            if (list != null) {
                 Iterator<WarnItem> it = list.list.iterator();
                 while (it.hasNext()) {
                     if (it.next().code.equals(item.code)) {

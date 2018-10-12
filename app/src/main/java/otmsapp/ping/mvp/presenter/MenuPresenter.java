@@ -9,6 +9,7 @@ import java.lang.ref.SoftReference;
 import otmsapp.ping.entitys.UserInfo;
 import otmsapp.ping.mvp.basics.PresenterViewBind;
 import otmsapp.ping.mvp.contract.MenuContract;
+import otmsapp.ping.mvp.view.HistoryActivity;
 import otmsapp.ping.mvp.view.LoginActivity;
 import otmsapp.ping.mvp.view.WarnActivity;
 import otmsapp.ping.server.LoopService;
@@ -24,6 +25,11 @@ public class MenuPresenter extends PresenterViewBind<MenuContract.View> implemen
     @Override
     public void openHistory() {
 
+        if (softReference.get()!=null){
+            Activity activity = softReference.get();
+            Intent intent = new Intent(activity,HistoryActivity.class);
+            activity.startActivity(intent);
+        }
     }
 
     @Override

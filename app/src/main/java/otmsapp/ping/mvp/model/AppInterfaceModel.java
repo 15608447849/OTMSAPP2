@@ -1,16 +1,18 @@
 package otmsapp.ping.mvp.model;
 
 import cn.hy.otms.rpcproxy.appInterface.AppInterfaceServicePrx;
+import cn.hy.otms.rpcproxy.appInterface.AppSchedvech;
 import cn.hy.otms.rpcproxy.appInterface.DispatchInfo;
 import cn.hy.otms.rpcproxy.appInterface.WarnsInfo;
 import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
 import otmsapp.ping.entitys.except.Abnormal;
 import otmsapp.ping.entitys.recycler.RecyclerBox;
+import otmsapp.ping.mvp.contract.HistoryContract;
 import otmsapp.ping.mvp.contract.WarnContract;
 import otmsapp.ping.tools.JsonUti;
 import otmsapp.ping.zerocice.IceServerAbs;
 
-public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model {
+public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model,HistoryContract.Model {
 
 
 
@@ -186,8 +188,14 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
     }
 
 
-
-
-
-
+    @Override
+    public AppSchedvech[] getHistoryTask(int userId, String y_m_d) {
+        try {
+            printParam("获取当前用户历史任务",userId,y_m_d);
+            return  getProxy().queryVechInfoPage(convert(userId,y_m_d));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

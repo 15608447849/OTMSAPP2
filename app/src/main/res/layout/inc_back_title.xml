@@ -22,10 +22,8 @@
         android:textSize="20sp"
         android:textColor="#ffffff"
         android:textStyle="bold"
-
         android:layout_margin="@dimen/dp10"
         android:layout_toEndOf="@id/iv_back"
-
         />
     <!-- 副标题 -->
     <TextView
@@ -39,5 +37,8 @@
         android:layout_margin="@dimen/dp10"
         android:layout_toEndOf="@id/tv_name"
         style="@style/textview_marquee"
+        android:paddingLeft="@dimen/dp3"
+        android:paddingRight="@dimen/dp3"
         />
+
 </RelativeLayout>

@@ -34,6 +34,8 @@
         <activity android:name=".mvp.view.RecycleActivity"/>
         <!--预警-->
         <activity android:name=".mvp.view.WarnActivity"/>
+        <!-- 历史-->
+        <activity android:name=".mvp.view.HistoryActivity"/>
     </application>
 
     <!--允许程序打开网络套接字-->
