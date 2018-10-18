@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import otmsapp.ping.R
+import otmsapp.ping.adapter.infs.IAdapter
 import otmsapp.ping.entitys.warn.WarnItem
 import otmsapp.ping.tools.TimeUtil
 
-class WarnListAdapter(var context: Context) : BaseAdapter(){
+class WarnListAdapter(val context: Context) : IAdapter(){
 
     /**
      * 预警列表
@@ -39,6 +41,9 @@ class WarnListAdapter(var context: Context) : BaseAdapter(){
         vh.type.text = warn.type
         vh.value.text = warn.value
         vh.range.text = warn.range
+        vh.delete.setOnClickListener{
+            callback?.onItemViewClicked(it,position)
+        }
         return vh.itemView
     }
 
@@ -51,12 +56,14 @@ class WarnListAdapter(var context: Context) : BaseAdapter(){
         val type = itemView.findViewById(R.id.tv_type) as TextView
         val value = itemView.findViewById(R.id.tv_value) as TextView
         val range = itemView.findViewById(R.id.tv_range) as TextView
+        val delete = itemView.findViewById(R.id.iv_delete) as ImageView
 
         init {
             itemView.tag = this
         }
-
     }
+
+
 }
 
 

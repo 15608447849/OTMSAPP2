@@ -1,4 +1,4 @@
-package otmsapp.ping.server;
+package otmsapp.ping.server.dispatch;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import otmsapp.ping.entitys.map.MTraceLocation;
 import otmsapp.ping.entitys.tuples.Tuple2;
-import otmsapp.ping.log.LLog;
 
 public class LocationHelper extends Thread implements AMapLocationListener {
 

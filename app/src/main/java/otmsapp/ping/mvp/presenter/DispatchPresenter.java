@@ -34,18 +34,23 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
 
         @Override
         public void onScanBoxSuccess(Box box) {
-            LLog.print(box.barCode+" 扫码成功");
+            if (isBindView()){
+                view.playScanSuccessMusic();
+            }
         }
 
         @Override
         public void onScanFail(String codeBar) {
-            LLog.print(codeBar + " 扫码失败");
-            if (isBindView()) view.toast("扫码失败");
+            if (isBindView()) {
+                view.playScanFailMusic();
+            }
         }
 
         @Override
         public void onScanUnloadRepeat(Box box) {
-            LLog.print(box.barCode + " 重复扫码");
+            if (isBindView()) {
+                view.playScanFailMusic();
+            }
         }
     };
 
@@ -68,7 +73,6 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
 
         LLog.print("二维码: "+codeBar+" ,当前选择的状态: "+ allowDispatchState+" ,当前选择的下标:"+selectIndex);
         if (!isBindView()) return;
-
 
         if (allowDispatchState==-1)  return;
 

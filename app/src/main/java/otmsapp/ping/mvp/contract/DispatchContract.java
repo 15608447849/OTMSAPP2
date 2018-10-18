@@ -13,32 +13,24 @@ import otmsapp.ping.mvp.basics.IView;
 public class DispatchContract {
 
     public interface model{
-
         void setCallback(Callback callback);
-
         //尝试纠正装货状态调度单
         void tryCorrectDispatchByLoadState(Dispatch dispatch);
-
         //检测门店是否进入完成状态
         boolean checkStoreIsToCompleteState(Store store);
         //检查门店是否进入卸货状态
         boolean checkStoreIsToUnLoadState(Store store);
         //检测门店是否返回装货状态
         boolean checkStoreIsToLoadState(Store store);
-
         //检测调度单是否进入完成状态
         boolean checkDispatchIsToBackState(Dispatch dispatch);
         //检查调度单是否进入等待启程的状态
         boolean checkDispatchIsToTakeoutState(Dispatch dispatch);
         //检测调度单是否返回装货状态
         boolean checkDispatchIsToLoadState(Dispatch dispatch);
-
-
         //扫码处理 二维码,调度单,选择的门店
         boolean scannerByLoad(String codeBar, Dispatch dispatch,Store store);
-
         boolean scannerByUnLoad(String codeBar, Dispatch dispatch,Store store);
-
         //生成卸货扫码异常
         void generateUnloadScanException(String codeBar,Dispatch dispatch, Store store);
         //成功卸货-检查是否存在可处理的扫码异常
@@ -64,6 +56,10 @@ public class DispatchContract {
         void dialog(String btnName,String message,Presenter.Callback callback);
 
         void updateDispatch();
+
+        void playScanSuccessMusic();
+
+        void playScanFailMusic();
     }
 
     public interface Presenter extends IPresenter<DispatchContract.View>{

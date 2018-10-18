@@ -11,14 +11,15 @@ import otmsapp.ping.mvp.basics.IView;
 
 public class HistoryContract {
     public interface Model{
-        //登录
         AppSchedvech[] getHistoryTask(int userId, String y_m_d);
     }
     public interface View extends IView {
         void updateDataText(@NotNull String text);
         void updateList(List<DispatchDetail> data);
+        void refreshList();
     }
     public interface Presenter extends IPresenter<View> {
         void query(int year,int month,int day);
+        void convert(AppSchedvech[] array, List<DispatchDetail> list);
     }
 }

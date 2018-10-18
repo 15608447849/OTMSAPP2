@@ -3,41 +3,34 @@ package otmsapp.ping.mvp.view
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
-import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
+import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import otmsapp.ping.R
 import kotlinx.android.synthetic.main.act_recycle.*
 import kotlinx.android.synthetic.main.inc_back_title.*
 import kotlinx.android.synthetic.main.inc_input_code.*
-import otmsapp.ping.adapter.DispatchListAdapter
 import otmsapp.ping.adapter.RecycleListAdapter
 import otmsapp.ping.entitys.IO
 import otmsapp.ping.entitys.action.ClickManager
 import otmsapp.ping.entitys.recycler.RecyclerBox
 import otmsapp.ping.entitys.scanner.ScannerCallback
-import otmsapp.ping.log.LLog
+import otmsapp.ping.mvp.basics.ViewBaseImp
 import otmsapp.ping.mvp.contract.RecycleContract
 import otmsapp.ping.mvp.presenter.RecyclePresenter
 import otmsapp.ping.tools.AppUtil
 import otmsapp.ping.tools.DialogUtil
-import otmsapp.ping.tools.ProgressFactory
 import otmsapp.ping.tools.StrUtil
-import java.util.ArrayList
 
 
-class RecycleActivity: Activity(), RecycleContract.View, ScannerCallback {
+class RecycleActivity: ViewBaseImp<RecyclePresenter>(), RecycleContract.View, ScannerCallback {
 
     private var adapter: RecycleListAdapter? = null
-
-    private val presenter = RecyclePresenter()
-
     private val click = ClickManager()
-
-    private var progressDialog: ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,25 +83,15 @@ class RecycleActivity: Activity(), RecycleContract.View, ScannerCallback {
         lv_content.adapter = adapter
 
         if (!presenter.init()){
+            startActivity(Intent(this,DispatchActivity::class.java))
             finish()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.bindView(this)
         presenter.setCurrentStoreIndex(intent.getIntExtra("index",-1))
         presenter.updateData();
-    }
-
-    override fun onPause() {
-        super.onPause()
-        presenter.unbindView()
-    }
-
-    override fun onDestroy() {
-        progressDialog?.dismiss()
-        super.onDestroy()
     }
 
     override fun updateStoreName(storeName: String?) {
@@ -142,17 +125,6 @@ class RecycleActivity: Activity(), RecycleContract.View, ScannerCallback {
 
     }
 
-    override fun showProgressBar() {
-        runOnUiThread {
-            if (progressDialog==null) progressDialog = ProgressFactory.createSimpleDialog(this,"正在处理中,请稍等片刻...");
-            progressDialog?.show()
-        }
-    }
-
-    override fun hindProgressBar() {
-        runOnUiThread { progressDialog?.hide() }
-    }
-
     override fun toast(message: String?) {
         runOnUiThread {
             DialogUtil.dialogSimple(this@RecycleActivity,message,"好的,知道了",null)
@@ -174,4 +146,5 @@ class RecycleActivity: Activity(), RecycleContract.View, ScannerCallback {
             else -> -1
         }
     }
+
 }

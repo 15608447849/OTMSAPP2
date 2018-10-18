@@ -6,8 +6,11 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -17,16 +20,23 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
 
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
+
+import otmsapp.ping.log.LLog;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -81,11 +91,12 @@ public class AppUtil {
         return false;
     }
 
-    /**
-     * 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
-     * @param context
-     * @return true 表示开启
-     */
+    //检查无线网络有效
+    private boolean isWirelessNetworkValid(Context context) {
+        return AppUtil.isOpenWifi(context) && AppUtil.isNetworkAvailable(context);
+    }
+
+   //判断GPS是否开启
     public static boolean isOenGPS(@NonNull Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         assert locationManager != null;
@@ -105,9 +116,7 @@ public class AppUtil {
         return Looper.myLooper() == Looper.getMainLooper();
     }
 
-    /**
-     * 获取当前进程名
-     */
+    //获取当前进程名
     public static String getCurrentProcessName(@NonNull Context context) {
         int pid = android.os.Process.myPid();
         String processName = "";
@@ -122,13 +131,11 @@ public class AppUtil {
         return processName;
     }
 
-    /**
-     * 判断当前进程是否是主进程
-     */
+    //判断当前进程是否是主进程
     public static boolean checkCurrentIsMainProgress(@NonNull Context context){
         return checkCurrentIsMainProgress(context,AppUtil.getCurrentProcessName(context));
     }
-
+    //判断当前进程是否是主进程
     public static boolean checkCurrentIsMainProgress(@NonNull Context context, @NonNull String currentProgressName){
         return context.getPackageName().equals(currentProgressName);
     }
@@ -161,13 +168,11 @@ public class AppUtil {
         return version;
     }
 
+    //简单信息弹窗
     public static void toast(@NonNull Context context, @NonNull String message){
         if (!checkUIThread() ) return;
         Toast.makeText(context,message,Toast.LENGTH_SHORT).show();
     }
-
-
-
 
     //获取CPU型号
     public static String getCpuType(@NonNull Context context){
@@ -189,6 +194,54 @@ public class AppUtil {
         return "unknown";
     }
 
+    //把bitmap 转file
+    public static boolean bitmap2File(Bitmap bitmap, File file){
+        try {
+            if (bitmap==null || file==null) return false;
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
+    //创建快捷方式 ; 权限:  <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    public static void addShortcut(Context context, int appIcon,boolean isCheck) {
+
+        try {
+            SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+            if (isCheck){
+                boolean isExist = sharedPreferences.getBoolean("shortcut", false);
+                if (isExist) return;
+            }
+            Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+            Intent shortcutIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+            shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+            final PackageManager pm = context.getPackageManager();
+            String title = pm.getApplicationLabel( pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA)).toString();
+            shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, title);
+            shortcut.putExtra("duplicate", false);
+            Parcelable iconResource = Intent.ShortcutIconResource.fromContext(context,appIcon);
+            shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
+            context.sendBroadcast(shortcut);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("shortcut", true);
+            editor.apply();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void installApk(Context context, String apkPath) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setDataAndType(Uri.parse("file://"+apkPath),"application/vnd.android.package-archive");
+        context.startActivity(intent);
+    }
 
 }

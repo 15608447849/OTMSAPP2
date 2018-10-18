@@ -1,16 +1,12 @@
 package otmsapp.ping.tools;
 
-import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
-import otmsapp.ping.log.LLog;
 
 /**
  * Created by Leeping on 2018/5/2.
@@ -19,26 +15,35 @@ import otmsapp.ping.log.LLog;
  */
 
 public abstract class HearServer extends Service implements Runnable {
+    private final Thread thread = new Thread(this);
+
     private PendingIntent pendingIntentOp; //闹钟使用
+
     private PowerUse power; //电源管理
+
     private FrontNotification notification;//前台通知栏
-    private Thread thread;
+
     private volatile boolean isRun = true;
+
     private long interval = 30 * 1000L;
 
 
+    public void setInterval(long interval) {
+        this.interval = interval;
+    }
+
     @Override
     public void onCreate() {
+        initialize();
         power = new PowerUse(getApplicationContext(),getClass().getSimpleName());
-        notification = createNotification();
-        notification.startForeground(this);
-        initCreate();
-        thread = new Thread(this);
+        notification = createForeNotification(new FrontNotification.Build(getApplicationContext()));
+        if (notification!=null) notification.startForeground(this);
         thread.setDaemon(true);
+        thread.setName(getClass()+"-"+Thread.currentThread().getId());
         thread.start();
     }
 
-    protected void initCreate(){}
+    protected void initialize(){};
 
     @Nullable
     @Override
@@ -54,39 +59,14 @@ public abstract class HearServer extends Service implements Runnable {
 
     @Override
     public void onDestroy() {
-        notification.stopForeground(this);
+        if (notification!=null) notification.stopForeground(this);
         stopAlarm();
         isRun = false;
         unlockSelf();
+
     }
 
-    private FrontNotification createNotification(){
-        return new FrontNotification.Build(getApplicationContext(),getNotificationId())
-                .setGroup(getNotificationGroupKey())
-                .setActivityIntent(getOpenActivityClass())
-                .setServiceIntent(getClass())
-                .setFlags(new int[]{Notification.FLAG_FOREGROUND_SERVICE,Notification.FLAG_NO_CLEAR})
-                .setDefaults(Notification.DEFAULT_LIGHTS)
-                .autoGenerateNotification(
-                        getNotificationTitle(),
-                        getNotificationContent(),
-                        getNotificationInfo(),
-                        getNotificationIcon());
-    }
-
-    protected abstract int getNotificationIcon();
-    protected int getNotificationId(){
-        return 1000;
-    }
-    protected String getNotificationGroupKey(){
-        return getClass().getName();
-    }
-
-    protected Class<? extends Activity> getOpenActivityClass(){
-        return null;
-    }
-
-
+     protected abstract FrontNotification createForeNotification(FrontNotification.Build build);
 
     @Override
     public void run() {
@@ -102,9 +82,7 @@ public abstract class HearServer extends Service implements Runnable {
             lockSelf();
         }
     }
-
     protected abstract void executeTask();
-
     public void startAlarmManagerHeartbeat() {
         if (pendingIntentOp==null){
             Intent intent = new Intent();
@@ -129,40 +107,14 @@ public abstract class HearServer extends Service implements Runnable {
     private long getNextTime() {
         return System.currentTimeMillis() + interval;
     }
-
-    /**
-     *
-     * @param i 秒
-     */
-    public void setInterval(int i) {
-        interval = i * 1000L;
-    }
-
     private void lockSelf() {
-        synchronized (HearServer.this){
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        synchronized (this){
+            try { wait(); } catch (InterruptedException ignored) { }
         }
     }
     private void unlockSelf(){
-        synchronized (HearServer.this){
-                notify();
-        }
+        synchronized (this){ notifyAll(); }
     }
 
 
-    protected String getNotificationTitle() {
-        return "心跳服务";
-    }
-
-    protected String getNotificationContent() {
-        return "连接存活";
-    }
-
-    protected String getNotificationInfo() {
-        return "请勿关闭";
-    }
 }

@@ -1,11 +1,15 @@
 package otmsapp.ping.zerocice;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import otmsapp.ping.log.LLog;
 
@@ -17,7 +21,7 @@ import otmsapp.ping.log.LLog;
 
 public class IceIo implements Closeable {
 
-    private static final String TAG = IceIo.class.getSimpleName();
+
 
     public interface IFilter{
         void filter() throws Exception;
@@ -44,6 +48,30 @@ public class IceIo implements Closeable {
 
     public void init(String serverName,String host,int port){
             IceClient.getInstance().getBuild().setServerName(serverName).setIp(host).setPort(port).reboot();
+    }
+
+    public void saveParamToSharedPreference(Context context, String tag, String ip, int port) {
+        SharedPreferences sp = context.getSharedPreferences("ice_param",Context.MODE_MULTI_PROCESS);
+        sp.edit().putString("tag",tag).putString("ip",ip).putInt("port",port).putBoolean("set",true).apply();
+    }
+
+    public String[] obtainParamToSharedPreference(Context context) {
+        SharedPreferences sp = context.getSharedPreferences("ice_param",Context.MODE_MULTI_PROCESS);
+        String tag = sp.getString("tag","");
+        String ip = sp.getString("ip","");
+        int port = sp.getInt("port",0);
+        return new String[]{tag,ip,String.valueOf(port)};
+    }
+
+    public void initBySharedPreference(Context context,String defTag,String defIp,int defPort) {
+        SharedPreferences sp = context.getSharedPreferences("ice_param",Context.MODE_MULTI_PROCESS);
+        String tag = sp.getString("tag",defTag);
+        String ip = sp.getString("ip",defIp);
+        int port = sp.getInt("port",defPort);
+        boolean isSet = sp.getBoolean("set",false);
+        if (!isSet) saveParamToSharedPreference(context,tag,ip,port);
+        LLog.print("服务器参数:"+ tag+"-"+ip+":"+port);
+        init(tag,ip,port);
     }
 
     @Override

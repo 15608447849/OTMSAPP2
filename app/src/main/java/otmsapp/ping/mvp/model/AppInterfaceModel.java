@@ -1,18 +1,26 @@
 package otmsapp.ping.mvp.model;
 
+import java.io.File;
+
 import cn.hy.otms.rpcproxy.appInterface.AppInterfaceServicePrx;
 import cn.hy.otms.rpcproxy.appInterface.AppSchedvech;
 import cn.hy.otms.rpcproxy.appInterface.DispatchInfo;
+import cn.hy.otms.rpcproxy.appInterface.SureFeeInfo;
 import cn.hy.otms.rpcproxy.appInterface.WarnsInfo;
 import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
+import cn.hy.otms.rpcproxy.dts.FileUploadRespond;
+import cn.hy.otms.rpcproxy.sysmanage.SysManageServicePrx;
+import cn.hy.otms.rpcproxy.sysmanage.UpdateRequestPackage;
+import cn.hy.otms.rpcproxy.sysmanage.UpdateResponsePackage;
 import otmsapp.ping.entitys.except.Abnormal;
 import otmsapp.ping.entitys.recycler.RecyclerBox;
+import otmsapp.ping.mvp.contract.CostContract;
 import otmsapp.ping.mvp.contract.HistoryContract;
 import otmsapp.ping.mvp.contract.WarnContract;
 import otmsapp.ping.tools.JsonUti;
 import otmsapp.ping.zerocice.IceServerAbs;
 
-public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model,HistoryContract.Model {
+public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model,HistoryContract.Model,CostContract.Model {
 
 
 
@@ -198,4 +206,37 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
         }
         return null;
     }
+
+    @Override
+    public SureFeeInfo[] getCostBill(int userId, String y_m_d) {
+        try {
+            printParam("获取运费账单",userId,y_m_d);
+            return  getProxy().appSureFeeInfo(convert(userId,y_m_d));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean optionCostBill(int userId, long train, int opCode) {
+        try {
+            printParam("确认费用信息",userId,train,opCode);
+            BoolMessage boolMessage = getProxy().updateFeeStatu(convert(train,opCode,userId,System.currentTimeMillis()));
+            return boolMessage.flag;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean uploadImage(File image, String serverFilePath, String serverFileName) {
+        //node
+        return false;
+    }
+
+
+
+
 }

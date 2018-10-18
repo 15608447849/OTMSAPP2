@@ -1,4 +1,4 @@
-package otmsapp.ping.server;
+package otmsapp.ping.server.dispatch;
 
 import otmsapp.ping.entitys.dispatch.VehicleInfo;
 import otmsapp.ping.entitys.map.MTraceLocation;

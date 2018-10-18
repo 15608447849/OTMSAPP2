@@ -10,7 +10,7 @@ import android.device.scanner.configuration.PropertyID;
 public class ScannerApi_UROVO extends ScannerApiThread {
     private Context context;
     private ScanManager mScanManager;
-    ScannerApi_UROVO(Context context) {
+    public ScannerApi_UROVO(Context context) {
         super(context);
     }
 

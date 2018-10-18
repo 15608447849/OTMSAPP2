@@ -39,7 +39,9 @@ public class GdMapLocation {
     //关闭
     public void destroy()  {
         stopLocation();//停止定位
+        LLog.print(mLocationClient.isStarted());
         mLocationClient.onDestroy(); // 高德定位客户端销毁
+        LLog.print("-"+mLocationClient.isStarted());
     }
 
     //开始定位

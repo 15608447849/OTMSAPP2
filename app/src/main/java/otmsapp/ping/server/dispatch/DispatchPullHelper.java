@@ -1,4 +1,4 @@
-package otmsapp.ping.server;
+package otmsapp.ping.server.dispatch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class DispatchPullHelper extends DispatchOperation {
             }
             //获取远程调度信息 如果没有车次,获取新车次任务;
             // 如果有车次,通知后台收到任务
-            boolean flag = dispatchInfoPause(server.dispatchInfoSync(userInfo.userId,traceNo));
+            boolean flag = dispatchInfoPause(server.dispatchInfoSync(userInfo.id,traceNo));
             if (!flag) pull(userInfo,vehicleInfo);
         } catch (Exception e) {
             e.printStackTrace();

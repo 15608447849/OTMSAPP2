@@ -16,6 +16,7 @@
             android:layout_centerVertical="true"
             android:src="@drawable/icon_logo"
             android:padding="@dimen/dp3"
+            android:background="@drawable/ic_bg_click_select"
             />
         <!--菜单图片-->
         <ImageView
@@ -26,11 +27,12 @@
             android:src="@drawable/ic_menu"
             android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/dp10"
+            android:background="@drawable/ic_bg_click_select"
             />
         <!--当前调度状态文本-->
         <TextView
             android:id="@+id/tv_state"
-            style="@style/textview_marquee"
+            style="@style/text_view_marquee"
             android:layout_width="123dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -53,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rl_title"
-        android:background="#C9C9C9"
+        android:background="@drawable/ic_bg_click_select"
         android:visibility="visible">
         <TextView
             android:id="@+id/tv_drop_down"
@@ -61,6 +63,7 @@
             android:layout_height="wrap_content"
             android:text="点击展开"
             android:textSize="12dp"
+            android:textStyle="italic"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
         <ImageView
@@ -88,6 +91,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_below="@id/rl_dispatch_area"
+        android:background="@drawable/ic_bg_click_select"
         >
         <TextView
             android:id="@+id/tv_pull_pu"
@@ -95,6 +99,7 @@
             android:layout_height="wrap_content"
             android:text="点击收起"
             android:textSize="12dp"
+            android:textStyle="italic"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             />

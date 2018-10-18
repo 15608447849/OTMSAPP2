@@ -7,6 +7,17 @@
     android:background="@drawable/bg_act_login">
 
     <ImageView
+        android:id="@+id/iv_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_connect"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/dp3"
+        android:padding="@dimen/dp10"
+        android:background="@drawable/ic_bg_click_select"
+        />
+
+    <ImageView
         android:id="@+id/iv_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,6 +61,7 @@
             android:singleLine="true"
             android:hint="请输入密码"
             android:layout_margin="@dimen/dp10"
+            android:inputType="textPassword"
             />
 
         <Button
@@ -58,6 +70,7 @@
             android:layout_height="wrap_content"
             android:text="登     录"
             android:layout_gravity="center_horizontal"
+            android:background="@drawable/ic_btn_bg_click_select"
             />
 
     </LinearLayout>

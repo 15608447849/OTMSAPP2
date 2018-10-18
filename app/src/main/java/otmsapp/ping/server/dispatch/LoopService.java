@@ -1,4 +1,4 @@
-package otmsapp.ping.server;
+package otmsapp.ping.server.dispatch;
 
 import android.app.Notification;
 import android.content.Intent;
@@ -7,13 +7,12 @@ import otmsapp.ping.R;
 import otmsapp.ping.entitys.UserInfo;
 import otmsapp.ping.entitys.dispatch.VehicleInfo;
 import otmsapp.ping.entitys.map.GdMapLocation;
-import otmsapp.ping.log.LLog;
 import otmsapp.ping.mvp.view.DispatchActivity;
-import otmsapp.ping.mvp.view.LoginActivity;
 import otmsapp.ping.mvp.view.WarnActivity;
 import otmsapp.ping.tools.AppUtil;
 import otmsapp.ping.tools.FrontNotification;
 import otmsapp.ping.tools.HearServer;
+import otmsapp.ping.tools.MediaUse;
 import otmsapp.ping.tools.PowerUse;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
@@ -28,9 +27,12 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
 
     private FrontNotification gpsNotify;
     private FrontNotification warnNotify;
+    private MediaUse mediaUse;
 
     @Override
-    protected void initCreate() {
+    protected void initialize() {
+        powerUse = new PowerUse(getApplicationContext(),"LoopPowerLock");
+        mediaUse = new MediaUse(getApplicationContext());
         gpsNotify = createGpsNotify();
         warnNotify = createWarnNotify();
         dispatchSyncHelper.setCallback(this);
@@ -43,11 +45,21 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
     public void onDestroy() {
         location.destroy();
         super.onDestroy();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @Override
-    protected int getNotificationIcon() {
-        return R.drawable.ic_launcher;
+    protected FrontNotification createForeNotification(FrontNotification.Build build) {
+        return  build
+                .setId(1000)
+                .setGroup("心跳")
+//                .setActivityIntent(openActivityClass)
+//                .setServiceIntent(getClass())
+                .autoGenerateNotification(
+                        "老百姓大药房TMS服务",
+                        "正在服务中",
+                        "请勿关闭",
+                        R.drawable.ic_launcher);
     }
 
     /** 检查GPS */
@@ -85,9 +97,12 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
     @Override
     public void updateDispatch() {
         try {
+            mediaUse.play(R.raw.msg); //通知调度信息到来
             Intent intent = new Intent(getApplicationContext(), DispatchActivity.class);
             intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("message","dispatch");
+            //亮屏解锁
+            powerUse.startPowerWakeLockByScreen();
             startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,9 +112,6 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
     private PowerUse powerUse;
     @Override
     public void notifyWarn() {
-        //发送通知
-        LLog.print("收到预警信息");
-        if (powerUse==null) powerUse = new PowerUse(getApplicationContext(),"LoopPowerLock");
         //亮屏解锁
         powerUse.startPowerWakeLockByScreen();
         //显示预警通知
@@ -109,33 +121,31 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
 
     //创建GPS 通知栏
     private FrontNotification createGpsNotify() {
-        FrontNotification.Build build = new FrontNotification.Build(getApplicationContext(),400);
+        FrontNotification.Build build = new FrontNotification.Build(getApplicationContext()).setId(400);
         Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         // 打开GPS设置界面
         build.setActivityIntent(intent);
         build.setFlags(new int[]{Notification.FLAG_INSISTENT,Notification.FLAG_AUTO_CANCEL});
-        build.setGroup(getNotificationGroupKey());
         build.setDefaults(Notification.DEFAULT_ALL);
         return build.autoGenerateNotification(
                 "通知",
                 "您好,请在设置中打开定位功能,避免影响您的行程录入",
                 "请及时处理",
-                getNotificationIcon());
+                R.drawable.ic_launcher);
     }
 
     //创建预警 通知栏
     private FrontNotification createWarnNotify() {
-        FrontNotification.Build build = new FrontNotification.Build(getApplicationContext(),401);
+        FrontNotification.Build build = new FrontNotification.Build(getApplicationContext()).setId(401);
         build.setActivityIntent(WarnActivity.class);
         build.setFlags(new int[]{Notification.FLAG_INSISTENT,Notification.FLAG_AUTO_CANCEL});
-        build.setGroup(getNotificationGroupKey());
         build.setDefaults(Notification.DEFAULT_ALL);
         return build.autoGenerateNotification(
                 "预警",
                 "注意: 请检查冷藏箱,温度异常!!!",
                 "请及时处理",
-                getNotificationIcon());
+                R.drawable.ic_launcher);
     }
 
 

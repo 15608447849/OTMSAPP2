@@ -10,6 +10,9 @@ import com.seuic.scanner.ScannerKey;
 import otmsapp.ping.log.LLog;
 import otmsapp.ping.tools.AppUtil;
 
+/**
+ * 设备密码4007770876
+ */
 public class ScannerApi_SEUIC extends ScannerApiThread implements DecodeInfoCallBack {
 
     public ScannerApi_SEUIC(Context context) {

@@ -9,11 +9,12 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import otmsapp.ping.R
+import otmsapp.ping.adapter.infs.IAdapter
 import otmsapp.ping.entitys.dispatch.Dispatch
 import otmsapp.ping.entitys.dispatch.Store
 import otmsapp.ping.tools.StrUtil
 
-class DispatchListAdapter(var context: Context) : BaseAdapter(){
+class DispatchListAdapter(val context: Context) : BaseAdapter(){
 
     /**
      * 调度对象
@@ -76,7 +77,7 @@ class DispatchListAdapter(var context: Context) : BaseAdapter(){
     private fun loadHandler(vh: ViewHolder, store: Store?,position: Int) {
         if(dispatch?.state!! > Dispatch.STATE.TAKEOUT) return
         vh.stateText.text = StrUtil.format("装载进度: [%d/%d]", store?.loadScanIndex, store?.boxSum)
-        if (store?.loadScanIndex!! == store?.boxSum!!) {
+        if (store?.loadScanIndex!! == store.boxSum) {
             vh.state.setImageResource(R.drawable.ic_complete)
         }
         vh.itemView.visibility = View.VISIBLE
@@ -86,7 +87,7 @@ class DispatchListAdapter(var context: Context) : BaseAdapter(){
     private fun unloadHandler(vh: ViewHolder, store: Store?,position: Int) {
         if(dispatch?.state!! != Dispatch.STATE.UNLOAD) return
         vh.stateText.text = StrUtil.format("卸载进度: [%d/%d]", store?.unloadScanIndex, store?.boxSum)
-        if (store?.unloadScanIndex!! == store?.boxSum!!) {
+        if (store?.unloadScanIndex!! == store.boxSum) {
             vh.state.setImageResource(R.drawable.ic_complete)
         }
         vh.itemView.visibility = View.VISIBLE

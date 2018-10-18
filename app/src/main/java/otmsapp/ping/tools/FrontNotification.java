@@ -10,8 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
-import otmsapp.ping.server.LoopService;
-
 /**
  * Created by Leeping on 2018/5/2.
  * email: 793065165@qq.com
@@ -21,18 +19,21 @@ public class FrontNotification {
 
     public static class Build{
         Context context;
-        int id;
+        int id = 1000;
         Notification notification;
         NotificationManager notificationManager;
         Intent activityIntent;//点击通知栏-跳转到指定Activity
-        int[] flags;
-        int defaults;
+        int[] flags = new int[]{Notification.FLAG_FOREGROUND_SERVICE,Notification.FLAG_NO_CLEAR};
+        int defaults = Notification.DEFAULT_LIGHTS;
         String groupKey = "default";
         Intent serviceIntent;//点击打开指定服务
-        public Build(Context context, int id){
+        public Build(Context context){
             this.context = context;
-            this.id = id;
             this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        public FrontNotification.Build setId(int id){
+            this.id = id;
+            return this;
         }
 
         public FrontNotification.Build setActivityIntent(Class<?> destCls){
@@ -103,6 +104,7 @@ public class FrontNotification {
         private Notification geneNotify(PendingIntent pIntent, String title, String content, String info, int icon, int defaults) {
             return new NotificationCompat.Builder(context)
                     .setSmallIcon(icon)
+
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),icon))
                     .setPriority(Notification.PRIORITY_MAX)
                     .setOngoing(true)

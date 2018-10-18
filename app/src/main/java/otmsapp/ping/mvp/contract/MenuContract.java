@@ -21,6 +21,10 @@ public class MenuContract {
         void openWarn();
         //打开费用核对
         void openCost();
+        //创建快捷方式
+        void createShortCut();
+        //设置服务器信息
+        void setServerInfo();
         //登出
         void logout();
         //退出

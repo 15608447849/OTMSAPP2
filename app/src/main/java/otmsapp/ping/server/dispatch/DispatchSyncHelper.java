@@ -1,4 +1,4 @@
-package otmsapp.ping.server;
+package otmsapp.ping.server.dispatch;
 
 import java.util.ArrayList;
 import java.util.Collections;

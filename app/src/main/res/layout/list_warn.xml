@@ -11,12 +11,14 @@
             android:layout_height="@dimen/dp60"
             style="@style/list_item_margin_lr">
             <ImageView
+                android:id="@+id/iv_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_delet"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:padding="@dimen/dp3"
+                android:layout_margin="@dimen/dp3"
+                android:background="@drawable/ic_bg_click_select"
                 />
             <TextView
                 android:id="@+id/tv_time"
@@ -64,11 +66,11 @@
             android:layout_below="@id/rl_title"
             style="@style/segment_line" />
         <RelativeLayout
+            android:id="@+id/rl_content"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp35"
             android:layout_below="@id/segment_line"
             style="@style/list_item_margin_lr">
-
             <TextView
                 android:id="@+id/tv_value"
                 android:layout_width="wrap_content"
@@ -89,7 +91,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 />
-
         </RelativeLayout>
+        <View
+            style="@style/segment_line"
+            android:layout_below="@id/rl_content" />
     </RelativeLayout>
 </FrameLayout>

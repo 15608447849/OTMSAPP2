@@ -10,6 +10,7 @@
         android:id="@+id/lv_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:divider="@null"
         android:layout_below="@id/rl_title"
         />
 </RelativeLayout>

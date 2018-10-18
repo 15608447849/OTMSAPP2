@@ -1,11 +1,11 @@
 package otmsapp.ping.mvp.view
 
-import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.AdapterView
-import android.widget.RadioGroup
+import android.widget.*
 import kotlinx.android.synthetic.main.act_dispatch.*
 import kotlinx.android.synthetic.main.inc_dispatch_button.*
 import kotlinx.android.synthetic.main.inc_dispatch_tab.*
@@ -13,35 +13,32 @@ import kotlinx.android.synthetic.main.inc_input_code.*
 import otmsapp.ping.R
 import otmsapp.ping.adapter.DispatchListAdapter
 import otmsapp.ping.entitys.IO
+import otmsapp.ping.entitys.UserInfo
 import otmsapp.ping.entitys.action.ClickManager
 import otmsapp.ping.entitys.dispatch.Dispatch
 import otmsapp.ping.entitys.scanner.ScannerCallback
 import otmsapp.ping.log.LLog
+import otmsapp.ping.mvp.basics.ViewBaseImp
 import otmsapp.ping.mvp.contract.DispatchContract
 import otmsapp.ping.mvp.contract.MenuContract
 import otmsapp.ping.mvp.presenter.DispatchPresenter
 import otmsapp.ping.mvp.presenter.MenuPresenter
-import otmsapp.ping.tools.AppUtil
-import otmsapp.ping.tools.DialogUtil
-import otmsapp.ping.tools.JsonUti
-import otmsapp.ping.tools.StrUtil
+import otmsapp.ping.tools.*
 
 /**
  * 调度页面
  */
-class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener, ScannerCallback, DispatchContract.View {
-
-
+class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener, ScannerCallback, DispatchContract.View {
 
     private var adapter:DispatchListAdapter? = null
 
     private val click = ClickManager()
 
-    private val presenter  = DispatchPresenter()
-
     private var menuPopWindow: MenuContract.View? = null
 
     private val menuPresenter = MenuPresenter(this)
+
+    private var mediaUse:MediaUse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,19 +102,45 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
             //弹出菜单pop
             menuPopWindow?.showWindows()
         }
+
+        mediaUse = MediaUse(this)
+
+
+        iv_logo.setOnClickListener {
+            //弹出个人信息
+            val inflater = LayoutInflater.from(this)
+            val v = inflater.inflate(R.layout.dialog_userinfo, null)
+
+            val name = v.findViewById(R.id.tv_user_name) as TextView
+            val id = v.findViewById(R.id.tv_user_id) as TextView
+            val phone = v.findViewById(R.id.tv_user_phone) as TextView
+            val comp = v.findViewById(R.id.tv_user_comp) as TextView
+
+            val builder = AlertDialog.Builder(this)
+            val dialog = builder.create();
+            dialog.setView(v) //设置弹窗布局
+            dialog.show()
+
+            val user = UserInfo().fetch<UserInfo>()
+
+            name.text = user.name
+            id.text = user.id.toString()
+            phone.text = user.phone
+            comp.text = user.compName
+
+        }
+
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.bindView(this)
         menuPopWindow?.bindPresenter(menuPresenter)
         IO.run{presenter.validateDispatch()}
     }
 
     override fun onPause() {
-        menuPopWindow?.unbindPresenter()
-        presenter.unbindView()
         super.onPause()
+        menuPopWindow?.unbindPresenter()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -127,10 +150,12 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
         }
     }
 
-
+    override fun onDestroy() {
+        mediaUse?.destroy()
+        super.onDestroy()
+    }
 
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
-        LLog.print("选中tab view,id: "+ checkedId)
         adapter?.tabType = when(checkedId){
             rbtn_load.id -> 1
             rbtn_unload.id  -> 2
@@ -138,10 +163,10 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
         }
         updateDispatch()
     }
+
     //更新调度单信息
     override fun updateDispatch() {
         runOnUiThread{
-
             adapter?.dispatch = Dispatch().fetch()
             adapter?.notifyDataSetChanged()
             LLog.print("更新调度单\n"+ JsonUti.javaBeanToJson(adapter?.dispatch))
@@ -154,9 +179,9 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
                 else -> "暂无调度作业"
             }
         }
-
     }
 
+    //列表子项点击
     override fun onItemClick(viewGroup: AdapterView<*>?, view: View?, position:Int, positionLong: Long) {
         if(adapter?.index == position){
             adapter?.index = -1
@@ -166,22 +191,11 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
         adapter?.notifyDataSetChanged()
     }
 
+    //接受扫码消息
     override fun onScanner(codeBar: String?) {
         IO.run{
             presenter.codeBarHandle(codeBar,adapter?.tabType!!, adapter?.index!!)
         }
-    }
-
-    override fun showProgressBar() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun hindProgressBar() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun toast(message: String?) {
-        runOnUiThread { AppUtil.toast(this@DispatchActivity, message!!) }
     }
 
     override fun dialog(btnName:String?,message: String?, callback: DispatchContract.Presenter.Callback?) {
@@ -190,6 +204,11 @@ class DispatchActivity: Activity(), RadioGroup.OnCheckedChangeListener, AdapterV
         }
     }
 
+    override fun playScanFailMusic() {
+        mediaUse?.play(R.raw.fait)
+    }
 
-
+    override fun playScanSuccessMusic() {
+        mediaUse?.play(R.raw.success)
+    }
 }

@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import otmsapp.ping.R
+import otmsapp.ping.adapter.infs.IAdapter
 import otmsapp.ping.entitys.recycler.RecyclerBox
 import otmsapp.ping.tools.StrUtil
 import otmsapp.ping.tools.TimeUtil
 
-class RecycleListAdapter(var context: Context) : BaseAdapter(){
+class RecycleListAdapter(val context: Context) : IAdapter(){
 
 
 

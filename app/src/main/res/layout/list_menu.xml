@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:padding="@dimen/dp10"
+    android:background="@drawable/ic_bg_click_select"
     >
 
     <ImageView

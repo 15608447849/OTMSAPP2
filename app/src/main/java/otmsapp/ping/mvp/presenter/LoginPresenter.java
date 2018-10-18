@@ -41,7 +41,10 @@ public class LoginPresenter extends PresenterViewBind<LoginContract.View> implem
                 return;
             }
             userInfo = new UserInfo();
-            userInfo.userId = info.userid;
+                userInfo.id = info.userid;
+                userInfo.phone = phone;
+                userInfo.name = info.realname;
+                userInfo.compName = info.compname;
             userInfo.save();
             tryLogin();
         }else{

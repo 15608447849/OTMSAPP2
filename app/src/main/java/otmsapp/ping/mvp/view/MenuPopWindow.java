@@ -22,6 +22,7 @@ import java.util.List;
 import otmsapp.ping.R;
 import otmsapp.ping.log.LLog;
 import otmsapp.ping.mvp.contract.MenuContract;
+import otmsapp.ping.tools.AppUtil;
 import otmsapp.ping.tools.StrUtil;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -88,35 +89,36 @@ public class MenuPopWindow implements MenuContract.View {
                     new MenuItem(R.drawable.ic_menu_warn, "预警信息", new MenuItem.Callback() {
                         @Override
                         public void onAction() {
-                            LLog.print("预警");
                             if (presenter!=null) presenter.openWarn();
                         }
                     }),
                     new MenuItem(R.drawable.ic_menu_history, "历史记录", new MenuItem.Callback() {
                         @Override
                         public void onAction() {
-                            LLog.print("历史");
                             if (presenter!=null) presenter.openHistory();
                         }
                     }),
                     new MenuItem(R.drawable.ic_menu_fee, "费用账单", new MenuItem.Callback() {
                         @Override
                         public void onAction() {
-                            LLog.print("费用");
                             if (presenter!=null) presenter.openCost();
+                        }
+                    }),
+                    new MenuItem(R.drawable.ic_short_cut, "快捷方式", new MenuItem.Callback() {
+                        @Override
+                        public void onAction() {
+                            if (presenter!=null) presenter.createShortCut();
                         }
                     }),
                     new MenuItem(R.drawable.ic_menu_logout, "退出登录", new MenuItem.Callback() {
                         @Override
                         public void onAction() {
-                            LLog.print("登出");
                             if (presenter!=null) presenter.logout();
                         }
                     }),
                     new MenuItem(R.drawable.ic_menu_exit, "结束应用", new MenuItem.Callback() {
                         @Override
                         public void onAction() {
-                            LLog.print("退出");
                             if (presenter!=null) presenter.exit();
                         }
                     })
@@ -181,6 +183,7 @@ public class MenuPopWindow implements MenuContract.View {
     }
     @Override
     public void toast(String message) {
+        AppUtil.toast(anchor.getContext(),message);
     }
 
     @Override

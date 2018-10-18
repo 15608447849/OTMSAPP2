@@ -19,7 +19,7 @@
         <!-- 高德地图定位服务 -->
         <service android:name="com.amap.api.location.APSService" android:process=":location"/>
         <!--轮询服务 -->
-        <service android:name=".server.LoopService" android:process=":loop"/>
+        <service android:name=".server.dispatch.LoopService" android:process=":loop"/>
 
         <!--登录,入口-->
         <activity android:name=".mvp.view.LoginActivity">
@@ -36,6 +36,9 @@
         <activity android:name=".mvp.view.WarnActivity"/>
         <!-- 历史-->
         <activity android:name=".mvp.view.HistoryActivity"/>
+        <!--费用账单-->
+        <activity android:name=".mvp.view.CostActivity"/>
+
     </application>
 
     <!--允许程序打开网络套接字-->
@@ -69,6 +72,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <!--可以直接弹出一个系统对话框让用户直接添加app到白名单-->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-
+    <!--快捷方式-->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
 
 </manifest>

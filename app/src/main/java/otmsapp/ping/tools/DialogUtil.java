@@ -2,6 +2,8 @@ package otmsapp.ping.tools;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -17,9 +19,8 @@ import otmsapp.ping.R;
  */
 
 public class DialogUtil {
-    public interface Action0 {
-        void onAction0();
-    }
+
+    public interface Action0 { void onAction0();}
 
     public static AlertDialog dialogSimple(Context context, String msg, String buttonText, final Action0 action0) {
         //弹出提示
@@ -29,6 +30,7 @@ public class DialogUtil {
                 0,
                 action0);
     }
+
     public static AlertDialog dialogSimple(Context context, String msg, String buttonText, int token, final Action0 action0) {
         //弹出提示
         return build(context,
@@ -91,7 +93,6 @@ public class DialogUtil {
 
         builder.setTitle(title) ;//设置标题
         builder.setMessage(message) ;//设置内容
-
         builder.setIcon(iconRid);//设置图标，
         if (positiveText!=null){
             builder.setPositiveButton(positiveText,listener);
@@ -146,6 +147,60 @@ public class DialogUtil {
         }
         return null;
     }
+
+    public static ProgressDialog createSimpleProgressDialog(Context context, String message){
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(message);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        return progressDialog;
+    }
+
+    public static void createSimpleDateDialog(Context context, int y, int m, int d, DatePickerDialog.OnDateSetListener listener){
+        new DatePickerDialog(context,listener,y,m,d).show();
+    }
+
+    public static void createSimpleListDialog(Context context,String title,CharSequence[] items,boolean autoDismiss,DialogInterface.OnClickListener listener){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setItems(items,listener);
+        if (!autoDismiss){
+            builder.setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    closeDialog(dialog);
+                    dialog.dismiss();
+                }
+            });
+        }
+        builder.setCancelable(autoDismiss);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        if (!autoDismiss) keepDialogOpen(dialog);
+    }
+
+    //保持dialog不关闭的方法
+    public static void keepDialogOpen(Object dialog) {
+        try {
+            java.lang.reflect.Field field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
+            field.setAccessible(true);
+            field.set(dialog, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //关闭dialog的方法
+    public static void closeDialog(Object dialog) {
+        try {
+            java.lang.reflect.Field field = dialog.getClass().getSuperclass().getDeclaredField("mShowing");
+            field.setAccessible(true);
+            field.set(dialog, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 

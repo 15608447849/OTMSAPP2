@@ -2,8 +2,22 @@ package otmsapp.ping.tools;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 import otmsapp.ping.log.LLog;
 
@@ -52,7 +66,47 @@ public abstract class LeeApplicationAbs extends Application implements Applicati
                 .setDateFormat(TimeUtil.getSimpleDateFormat("[MM/dd HH:mm]"))
                 .setLogFileName(processName+"_"+ TimeUtil.formatUTCByCurrent("MMdd"))
                 .setWriteFile(true);
+                //存储应用进程号
+                storeProcessPidToFile(processName,android.os.Process.myPid());
     }
+
+    private void storeProcessPidToFile(String processName,int pid) {
+        try {
+            File dirs = new File(getCacheDir().getPath()+"/pids");
+            if (!dirs.exists()) dirs.mkdirs();
+            File file  = new File(dirs,processName);
+            if (!file.exists()) file.createNewFile();
+            FileWriter writer = new FileWriter(file);
+            writer.write(pid+"\n");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void killAllProcess(boolean containSelf){
+        try {
+            File dirs = new File(getCacheDir().getPath()+"/pids");
+            if (dirs.exists()) {
+
+                for (File file : dirs.listFiles()){
+                    BufferedReader reader = new BufferedReader(new FileReader(file));
+                    String sPid = reader.readLine();
+                    reader.close();
+                    file.delete();
+                    int pid = Integer.parseInt(sPid);
+                    if (pid == android.os.Process.myPid()) continue;
+                    android.os.Process.killProcess(pid);
+
+                }
+            }
+           if (containSelf) android.os.Process.killProcess(android.os.Process.myPid());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 主包名进程 初始化创建

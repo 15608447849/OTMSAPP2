@@ -1,74 +1,99 @@
 package otmsapp.ping.mvp.view
 
-import android.app.Activity
-import android.app.ProgressDialog
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import otmsapp.ping.R
-import otmsapp.ping.mvp.presenter.LoginPresenter
 import otmsapp.ping.mvp.contract.LoginContract
 import kotlinx.android.synthetic.main.act_login.*
-import otmsapp.ping.entitys.IO
 import otmsapp.ping.tools.AppUtil
 import otmsapp.ping.tools.StrUtil
 import android.text.InputFilter
 import android.text.method.DigitsKeyListener
-import android.text.Spanned
-import otmsapp.ping.tools.ProgressFactory
+import android.view.LayoutInflater
+import android.widget.Button
+import otmsapp.ping.entitys.IO
+import otmsapp.ping.mvp.basics.ViewBaseImp
+import otmsapp.ping.mvp.presenter.LoginPresenter
+import android.widget.EditText
+import otmsapp.ping.entitys.DefaultVersionUpImp
+import otmsapp.ping.tools.LeeApplicationAbs
+import otmsapp.ping.zerocice.IceIo
 
 
-class LoginActivity: Activity(), LoginContract.View , View.OnClickListener {
-
-    private val presenter = LoginPresenter()
-    private var progressDialog: ProgressDialog? = null
+class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_login)
-        tv_version.text = StrUtil.format("${AppUtil.getVersionName(this)}-${AppUtil.getVersionCode(this)}-${AppUtil.getCpuType(this)}")
+        tv_version.text = StrUtil.format("${AppUtil.getVersionName(this)}-${AppUtil.getVersionCode(this)}")
         et_phone.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(11))
         et_phone.keyListener = DigitsKeyListener.getInstance("0123456789")
-        et_password.filters = arrayOf<InputFilter>(object : InputFilter{
-            override fun filter(source: CharSequence?, start: Int, end: Int, dest: Spanned?, dstart: Int, dend: Int): CharSequence? {
-                for (i in start until end) {
-                    // 只允许输入字母/数字
-                    if (!Character.isLetterOrDigit(source!![i])) {
-                        return ""
-                    }
+        et_password.filters = arrayOf<InputFilter>(InputFilter { source, start, end, dest, dstart, dend ->
+            for (i in start until end) {
+                // 只允许输入字母/数字
+                if (!Character.isLetterOrDigit(source!![i])) {
+                    return@InputFilter ""
                 }
-                return null
             }
+            null
         }) ;
         btn_login.setOnClickListener(this)
-        presenter.bindView(this)
+
+        iv_connect.setOnClickListener {
+           openServerSetting()
+        }
     }
+
+    private fun openServerSetting() {
+        val inflater = LayoutInflater.from(this)
+        val v = inflater.inflate(R.layout.dialog_setting_server, null)
+
+        val tag = v.findViewById(R.id.et_tag) as EditText
+        val address = v.findViewById(R.id.et_address) as EditText
+        val port = v.findViewById(R.id.et_port) as EditText
+
+        val save = v.findViewById(R.id.btn_save) as Button
+        val cancel = v.findViewById(R.id.btn_cancel) as Button
+
+        val builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        val dialog = builder.create();
+        dialog.setView(v) //设置弹窗布局
+        dialog.show()
+
+        val array = IceIo.get().obtainParamToSharedPreference(this)
+
+        tag.setText(array[0])
+        address.setText(array[1])
+        port.setText(array[2])
+
+        cancel.setOnClickListener { dialog.dismiss()  }
+
+        save.setOnClickListener{
+            dialog.dismiss()
+            val tagStr = tag.text.toString()
+            val addressStr = address.text.toString()
+            val portStr = port.text.toString()
+            IceIo.get().saveParamToSharedPreference(this,tagStr,addressStr,portStr.toInt())
+
+//            //重启应用
+            val i = baseContext.packageManager.getLaunchIntentForPackage(baseContext.packageName)
+            i!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(i)
+            (application as? LeeApplicationAbs)?.killAllProcess(true)
+        }
+
+    }
+
+
 
     override fun onResume() {
         super.onResume()
         presenter.tryLogin()
     }
 
-    override fun onDestroy() {
-        presenter.unbindView()
-        progressDialog?.dismiss()
-        super.onDestroy()
-    }
-
-    override fun showProgressBar() {
-        runOnUiThread {
-            if (progressDialog==null) progressDialog = ProgressFactory.createSimpleDialog(this,"正在登陆中,请稍等片刻...");
-            progressDialog?.show()
-        }
-    }
-
-    override fun hindProgressBar() {
-        runOnUiThread { progressDialog?.hide() }
-    }
-
-    override fun toast(message: String?) {
-        runOnUiThread { AppUtil.toast(this@LoginActivity, message!!) }
-    }
 
     override fun onClick(view: View) {
         AppUtil.hideSoftInputFromWindow(this)
@@ -78,7 +103,8 @@ class LoginActivity: Activity(), LoginContract.View , View.OnClickListener {
     }
 
     override fun onLogin() {
-           startActivity(Intent(this@LoginActivity,DispatchActivity::class.java))
-           finish()
+            startActivity(Intent(this,DispatchActivity::class.java))
+            IO.run(DefaultVersionUpImp(this))
+            finish()
     }
 }

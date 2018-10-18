@@ -8,6 +8,6 @@ public class StoreDetail {
     //门店简称
     public String simName;
     //箱号集合
-    public List<String> boxNoList;
+    public CharSequence[] boxNoList;
 
 }

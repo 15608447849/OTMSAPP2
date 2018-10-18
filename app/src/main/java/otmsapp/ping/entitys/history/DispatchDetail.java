@@ -1,29 +1,21 @@
 package otmsapp.ping.entitys.history;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 查询的订单详细信息
  */
 public class DispatchDetail {
-    //门店数
-    public int storeNum;
-    //总箱数
-    public int boxNum;
-    //调度单号
-    public String dispatchNo;
-    //车牌号
-    public String plateNo;
-    //签收时间
-    public long time;
-    //里程数
-    public double mileage;
+    //车次号
+    public long trainNo;
+    //总费用
+    public double totalFee;
     //初始运费
     public double initialFee;
     //异动运费
     public double abnormalFee;
-    //总费用
-    public double totalFee;
-    //应结运费
-    public double settle;
-    //实结运费
-    public double realSettle;
+    //门店列表
+    public List<StoreDetail> storeDetails = new ArrayList<>();
+
 }

@@ -33,9 +33,9 @@ public final class IceClient extends Thread implements Closeable{
     //最后接入时间
     private long lastAccessTimestamp = 0L;
     //空闲时间
-    private long idleTime = 5 * 60 * 1000L;
+    private long idleTime = 3 * 60 * 1000L;
     //方法调用超时
-    private int invokeTimeout = 10 * 1000;
+    private int invokeTimeout = 60 * 1000;
 
     private String serverName = "";
     //端口号

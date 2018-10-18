@@ -1,4 +1,4 @@
-package otmsapp.ping.server;
+package otmsapp.ping.server.dispatch;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMapUtils;

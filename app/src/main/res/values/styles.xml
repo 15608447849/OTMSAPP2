@@ -13,6 +13,7 @@
         <item name="android:layout_margin">@dimen/dp3</item>
         <item name="android:padding">@dimen/dp3</item>
         <item name="android:layout_height">@dimen/dp45</item>
+        <item name="android:background">@drawable/ic_btn_bg_click_select</item>
     </style>
 
     <!-- 调度列表tab样式 -->
@@ -65,7 +66,7 @@
         <item name="android:background">@color/segment_line</item>
     </style>
     <!-- tv 走马灯 请使用   tv.setSelected(true); 开启滚动-->
-    <style name="textview_marquee">
+    <style name="text_view_marquee">
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:marqueeRepeatLimit">marquee_forever</item>

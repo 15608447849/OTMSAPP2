@@ -2,15 +2,19 @@ package otmsapp.ping;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import otmsapp.ping.entitys.IO;
 import otmsapp.ping.entitys.scanner.ScannerApiThread;
+import otmsapp.ping.entitys.scanner.ScannerApi_UROVO;
 import otmsapp.ping.entitys.scanner.ScannerCallback;
 import otmsapp.ping.entitys.scanner.ScannerApi_SEUIC;
-import otmsapp.ping.server.LoopService;
+import otmsapp.ping.log.LLog;
+import otmsapp.ping.server.dispatch.LoopService;
 import otmsapp.ping.storege.db.SQLiteStore;
 import otmsapp.ping.tools.AppUtil;
 import otmsapp.ping.tools.LeeApplicationAbs;
@@ -25,9 +29,9 @@ public class ApplicationInitialization extends LeeApplicationAbs{
 
     @Override
     protected void onCreateByAllProgress(String processName) {
+        if (processName.contains(":location")) return;
         super.onCreateByAllProgress(processName);
         SQLiteStore.get().init(getApplicationContext());
-        IceIo.get().init("LBXTMS", "192.168.1.120", 4061);
         //添加网络状态过滤器
         IceIo.get().addFilter(new IceIo.IFilter() {
             @Override
@@ -37,17 +41,22 @@ public class ApplicationInitialization extends LeeApplicationAbs{
             }
         });
 
+        IceIo.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "192.168.1.120", 4061);
+    }
+
+
+    @Override
+    protected void onCreateByApplicationMainProgress(String processName) {
+        startService(new Intent(getApplicationContext(), LoopService.class)); //打开服务
+        AppUtil.addShortcut(getApplicationContext(),R.drawable.ic_launcher,true);//创建快捷方式
     }
 
     private void initScannerApi() {
         if (android.os.Build.VERSION.SDK_INT == 22){
             scannerApiThread = new ScannerApi_SEUIC(this);
+        }else if (android.os.Build.VERSION.SDK_INT == 18){
+            scannerApiThread = new ScannerApi_UROVO(this);
         }
-    }
-
-    @Override
-    protected void onCreateByApplicationMainProgress(String processName) {
-        startService(new Intent(getApplicationContext(), LoopService.class));
     }
 
     /**
@@ -62,13 +71,12 @@ public class ApplicationInitialization extends LeeApplicationAbs{
         activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
         //应用运行时，保持屏幕高亮,不锁屏
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         //设定软键盘的输入法模式: 确保当前输入焦点是可见的
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        //扫码设备
         if (activity instanceof ScannerCallback){
             if (scannerApiThread == null) initScannerApi();
         }
-
     }
 
     @Override

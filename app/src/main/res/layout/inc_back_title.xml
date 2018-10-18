@@ -12,6 +12,7 @@
         android:src="@drawable/ic_back"
         android:layout_alignParentStart="true"
         android:padding="@dimen/dp10"
+        android:background="@drawable/ic_bg_click_select"
         />
     <!-- 主标题 -->
     <TextView
@@ -22,8 +23,9 @@
         android:textSize="20sp"
         android:textColor="#ffffff"
         android:textStyle="bold"
-        android:layout_margin="@dimen/dp10"
+        android:layout_marginStart="@dimen/dp15"
         android:layout_toEndOf="@id/iv_back"
+        android:text=""
         />
     <!-- 副标题 -->
     <TextView
@@ -34,11 +36,23 @@
         android:textSize="16sp"
         android:textColor="#ffffff"
         android:textStyle="bold"
-        android:layout_margin="@dimen/dp10"
+        android:layout_marginStart="@dimen/dp15"
         android:layout_toEndOf="@id/tv_name"
-        style="@style/textview_marquee"
-        android:paddingLeft="@dimen/dp3"
-        android:paddingRight="@dimen/dp3"
+        style="@style/text_view_marquee"
+        android:padding="@dimen/dp3"
+        android:background="@drawable/ic_bg_click_select"
+        android:text=""
         />
 
+        <ImageView
+            android:id="@+id/iv_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_refresh"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/dp10"
+            android:background="@drawable/ic_bg_click_select"
+            android:visibility="gone"
+            />
 </RelativeLayout>
