@@ -60,6 +60,8 @@ public class DispatchContract {
         void playScanSuccessMusic();
 
         void playScanFailMusic();
+
+        void resetListIndex();
     }
 
     public interface Presenter extends IPresenter<DispatchContract.View>{

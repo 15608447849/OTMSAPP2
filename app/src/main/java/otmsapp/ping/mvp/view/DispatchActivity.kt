@@ -30,6 +30,7 @@ import otmsapp.ping.tools.*
  */
 class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener, ScannerCallback, DispatchContract.View {
 
+
     private var adapter:DispatchListAdapter? = null
 
     private val click = ClickManager()
@@ -163,6 +164,9 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         }
         updateDispatch()
     }
+    override fun resetListIndex() {
+        adapter?.index = -1
+    }
 
     //更新调度单信息
     override fun updateDispatch() {
@@ -198,6 +202,12 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         }
     }
 
+    override fun toast(message: String?) {
+        runOnUiThread {
+            DialogUtil.dialogSimple(this, message,"知道了",null)
+        }
+    }
+
     override fun dialog(btnName:String?,message: String?, callback: DispatchContract.Presenter.Callback?) {
         runOnUiThread {
             DialogUtil.dialogSimple2(this, message,btnName) { IO.run {callback?.onCallback()} }
@@ -205,10 +215,14 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
     }
 
     override fun playScanFailMusic() {
-        mediaUse?.play(R.raw.fait)
+        runOnUiThread{
+            mediaUse?.play(R.raw.fait)
+        }
     }
 
     override fun playScanSuccessMusic() {
-        mediaUse?.play(R.raw.success)
+        runOnUiThread{
+            mediaUse?.play(R.raw.success)
+        }
     }
 }

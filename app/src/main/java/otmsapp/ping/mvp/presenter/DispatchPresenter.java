@@ -49,6 +49,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         @Override
         public void onScanUnloadRepeat(Box box) {
             if (isBindView()) {
+                view.toast("箱号:"+box.barCode+"\n重复扫码");
                 view.playScanFailMusic();
             }
         }
@@ -72,6 +73,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
     public void codeBarHandle(String codeBar,int allowDispatchState , int selectIndex) {
 
         LLog.print("二维码: "+codeBar+" ,当前选择的状态: "+ allowDispatchState+" ,当前选择的下标:"+selectIndex);
+
         if (!isBindView()) return;
 
         if (allowDispatchState==-1)  return;
@@ -87,8 +89,10 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
             return;
         }
         if (selectIndex>dispatch.storeList.size()){
+            view.toast("调度单数据异常,无法进行操作");
             return;
         }
+
         Store store = dispatch.storeList.get(selectIndex);
 
         //打开进度条
@@ -144,6 +148,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         Trace trace = new Trace().fetch();
         trace.state = Trace.STATE.RECODE_ING;
         trace.save();
+        view.resetListIndex();
         view.updateDispatch();
         view.toast("祝您一路平安");
 
@@ -177,6 +182,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         Trace trace = new Trace().fetch();
         trace.state = Trace.STATE.RECODE_FINISH;
         trace.save();
+        view.resetListIndex();
         view.updateDispatch();
         view.toast("您辛苦了,调度单将自动完成数据同步");
 
@@ -249,6 +255,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         }
     }
 
+    //货差
     @Override
     public void unloadAbnormalSure(int index) {
         Dispatch dispatch = new Dispatch().fetch();

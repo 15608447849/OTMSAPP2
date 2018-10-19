@@ -218,7 +218,7 @@ public class DispatchModel implements DispatchContract.model{
                     //等待回收的箱子 -> 重复扫码通知
                     if (callback!=null) callback.onScanUnloadRepeat(box);
                 }
-
+                if (callback!=null) callback.onScanBoxSuccess(box);
                 return true;
             }
         }

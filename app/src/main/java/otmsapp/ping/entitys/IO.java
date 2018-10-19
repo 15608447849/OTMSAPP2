@@ -8,8 +8,7 @@ public class IO {
     public static void run(Runnable runnable){
         if (AppUtil.checkUIThread()){
              pool.post(runnable);
-        }
-        else{
+        }else{
             runnable.run();
         }
     }

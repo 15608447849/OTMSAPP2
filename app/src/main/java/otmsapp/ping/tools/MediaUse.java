@@ -4,6 +4,14 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Looper;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import otmsapp.ping.log.LLog;
 
 /**
  * Created by Leeping on 2018/5/2.
@@ -14,17 +22,16 @@ public class MediaUse {
     //音频播放的
     private MediaPlayer mMediaPlayer;
     private Context context;
-
     public MediaUse(Context context) {
         this.context = context;
-
     }
 
     public void destroy(){
-
         close();
         context = null;
     }
+
+
 
     public void play(int rid){
         close();
@@ -52,6 +59,7 @@ public class MediaUse {
                 mMediaPlayer.pause();
                 mMediaPlayer.stop();
             }
+            mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
         }

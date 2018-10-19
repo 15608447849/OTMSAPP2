@@ -26,6 +26,7 @@ public class LLog{
     private static final Runnable RUNNABLE = new Runnable() {
         @Override
         public void run() {
+            clear();
             execute();
         }
     };
@@ -86,6 +87,10 @@ public class LLog{
                     new Object[]{thread,stackTraceElements, objects}
                 );
         notifyThread();
+    }
+
+    public static void clear(){
+        fileHandler.clear(build);
     }
 
     private static void execute() {

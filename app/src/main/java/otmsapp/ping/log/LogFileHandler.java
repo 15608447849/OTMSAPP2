@@ -3,6 +3,7 @@ package otmsapp.ping.log;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by Leeping on 2018/8/20.
@@ -12,6 +13,26 @@ import java.io.IOException;
 public class LogFileHandler {
 
 
+    void clear(Build build){
+        try {
+            File folder = new File(build.logFolderPath);
+            if (!folder.exists()) return;
+            File files[] = folder.listFiles();
+            ArrayList<File> delFile = new ArrayList<>();
+            long time;
+            for (File file : files){
+                time = System.currentTimeMillis()/1000 - file.lastModified();
+                if (time > build.storageDays*24*60*60){
+                    delFile.add(file);
+                }
+            }
+            //删除文件
+            for (File file : delFile){
+                file.delete();
+            }
+        } catch (Exception e) {
+        }
+    }
 
     void handle(Build build,String msg) throws Exception{
         if (!build.isWriteFile) return;
