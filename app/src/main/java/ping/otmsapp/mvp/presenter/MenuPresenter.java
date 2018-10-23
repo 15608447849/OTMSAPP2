@@ -7,14 +7,19 @@ import java.lang.ref.SoftReference;
 
 import ping.otmsapp.R;
 import ping.otmsapp.entitys.UserInfo;
+import ping.otmsapp.entitys.dispatch.Dispatch;
 import ping.otmsapp.mvp.basics.PresenterViewBind;
 import ping.otmsapp.mvp.contract.MenuContract;
 import ping.otmsapp.mvp.view.CostActivity;
+import ping.otmsapp.mvp.view.DispatchActivity;
 import ping.otmsapp.mvp.view.HistoryActivity;
 import ping.otmsapp.mvp.view.LoginActivity;
 import ping.otmsapp.mvp.view.WarnActivity;
+import ping.otmsapp.server.dispatch.DispatchOperation;
 import ping.otmsapp.server.dispatch.LoopService;
 import ping.otmsapp.tools.AppUtil;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class MenuPresenter extends PresenterViewBind<MenuContract.View> implements MenuContract.Presenter {
 
@@ -61,8 +66,15 @@ public class MenuPresenter extends PresenterViewBind<MenuContract.View> implemen
     }
 
     @Override
-    public void setServerInfo() {
-
+    public void clearDispatch() {
+        if (softReference.get()!=null){
+            new DispatchOperation().forceDelete();
+            Activity activity = softReference.get();
+            Intent intent = new Intent(activity, DispatchActivity.class);
+            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("message","dispatch");
+            activity.startActivity(intent);
+        }
     }
 
     @Override

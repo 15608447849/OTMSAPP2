@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ping.otmsapp.log.LLog;
 
@@ -19,9 +18,7 @@ import ping.otmsapp.log.LLog;
  * ICE访问线程池
  */
 
-public class IceIo implements Closeable {
-
-
+public class IceHelper implements Closeable {
 
     public interface IFilter{
         void filter() throws Exception;
@@ -34,15 +31,14 @@ public class IceIo implements Closeable {
     }
 
 
-    private IceIo(){}
+    private IceHelper(){}
 
     private static class Holder{
-        private static IceIo INSTANCE = new IceIo();
+        private static IceHelper INSTANCE = new IceHelper();
     }
 
-    private IOThreadPool pool = new IOThreadPool();
 
-    public static IceIo get(){
+    public static IceHelper get(){
         return Holder.INSTANCE;
     }
 
@@ -77,7 +73,6 @@ public class IceIo implements Closeable {
     public void close() throws IOException {
         filterList.clear();
         IceClient.getInstance().close();
-        pool.close();
     }
 
    //执行过滤
@@ -99,12 +94,12 @@ public class IceIo implements Closeable {
      */
     public synchronized void println(Object... objects){
         if (isPrint){
-            StringBuffer stringBuffer = new StringBuffer();
-            stringBuffer.append(IceClient.getInstance().getServerInfo());
+            StringBuilder sb = new StringBuilder();
+            sb.append(IceClient.getInstance().getServerInfo());
             for (Object s: objects){
-                stringBuffer.append(" ,").append(s.toString());
+                sb.append(" ,").append(s.toString());
             }
-            LLog.print(stringBuffer.toString());
+            LLog.print(sb.toString());
         }
     }
 

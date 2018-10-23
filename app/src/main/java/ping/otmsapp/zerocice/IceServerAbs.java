@@ -3,8 +3,6 @@ package ping.otmsapp.zerocice;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import ping.otmsapp.log.LLog;
-
 /**
  * Created by Leeping on 2018/7/13.
  * email: 793065165@qq.com
@@ -21,15 +19,15 @@ public abstract class IceServerAbs<P extends Ice.ObjectPrx> {
     }
 
     private IceClient getIce(){
-        return IceIo.get().getIceClient();
+        return IceHelper.get().getIceClient();
     }
 
     protected P getProxy() throws Exception{
-        IceIo.get().executeFilter();
+        IceHelper.get().executeFilter();
         return getIce().getServicePrx(cls); }
 
     protected void printParam(Object... params){
-        IceIo.get().println(params);
+        IceHelper.get().println(params);
     }
 
     /**ice string数组的参数传递 */
@@ -46,6 +44,6 @@ public abstract class IceServerAbs<P extends Ice.ObjectPrx> {
 
 
     protected String getParam(String k){
-        return IceIo.get().getParams(k);
+        return IceHelper.get().getParams(k);
     }
 }

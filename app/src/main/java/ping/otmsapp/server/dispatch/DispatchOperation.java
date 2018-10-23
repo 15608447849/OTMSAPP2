@@ -33,7 +33,8 @@ public class DispatchOperation{
             obj.save();
         }
     }
-    void forceDelete(){
+
+   public void forceDelete(){
         //清理异常队列
         new AbnormalList().remove();
         new AbnormalListSync().remove();

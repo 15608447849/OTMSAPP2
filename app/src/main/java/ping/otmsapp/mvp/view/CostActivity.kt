@@ -1,27 +1,22 @@
 package ping.otmsapp.mvp.view
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
 import kotlinx.android.synthetic.main.act_history.*
 import kotlinx.android.synthetic.main.inc_back_title.*
 import ping.otmsapp.R
 import ping.otmsapp.adapter.CostListAdapter
 import ping.otmsapp.entitys.IO
 import ping.otmsapp.entitys.cost.FeeDetail
-import ping.otmsapp.log.LLog
 import ping.otmsapp.mvp.basics.ViewBaseImp
 import ping.otmsapp.mvp.contract.CostContract
 import ping.otmsapp.mvp.presenter.CostPresenter
@@ -81,17 +76,17 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
 
             when(view.id){
                 R.id.btn_reject -> {
-                    IO.run {
+                    IO.pool {
                         presenter.rejectCostBill(feeDetail)
                     }
                 }
                 R.id.btn_sure-> {
-                    IO.run {
+                    IO.pool {
                         presenter.sureCostBill(feeDetail)
                     }
                 }
-                R.id.iv_upload -> {
-                    IO.run {
+                R.id.ll_upload -> {
+                    IO.pool {
                         presenter.preUploadImage(feeDetail);
                     }
                 }
@@ -123,7 +118,7 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
     }
 
     override fun refreshList() {
-        IO.run {
+        IO.pool {
             presenter.query(mYear,mMonth,mDay)
         }
     }
@@ -166,7 +161,7 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
             toast("图片不可用")
             return
         }
-        IO.run {
+        IO.pool {
 
             try {
                 if (requestCode == 100) { //相册选择
@@ -209,7 +204,7 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
                 dialog.dismiss()
                 iv.setImageBitmap(null)
                 bitmap.recycle()
-                IO.run {
+                IO.pool {
                     presenter.uploadImage(tempFile);
                     tempFile?.delete()
                     tempFile = null

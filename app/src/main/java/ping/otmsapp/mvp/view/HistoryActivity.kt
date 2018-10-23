@@ -1,23 +1,16 @@
 package ping.otmsapp.mvp.view
 
-import android.app.Activity
-import android.app.AlertDialog
 import android.os.Bundle
 import ping.otmsapp.R
 import ping.otmsapp.tools.StrUtil
 import java.util.*
-import android.app.DatePickerDialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.view.View
-import android.widget.DatePicker
-import android.widget.Toast
 import kotlinx.android.synthetic.main.act_history.*
 import kotlinx.android.synthetic.main.inc_back_title.*
 import ping.otmsapp.adapter.HistoryListAdapter
 import ping.otmsapp.entitys.IO
 import ping.otmsapp.entitys.history.DispatchDetail
-import ping.otmsapp.log.LLog
 import ping.otmsapp.mvp.basics.ViewBaseImp
 import ping.otmsapp.mvp.contract.HistoryContract
 import ping.otmsapp.mvp.presenter.HistoryPresenter
@@ -96,7 +89,7 @@ class HistoryActivity: ViewBaseImp<HistoryPresenter>() ,HistoryContract.View{
     }
 
     override fun refreshList() {
-        IO.run {
+        IO.pool {
             presenter.query(mYear,mMonth,mDay)
         }
     }

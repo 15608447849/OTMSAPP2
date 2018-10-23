@@ -1,10 +1,7 @@
 package ping.otmsapp.mvp.view
 
-import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import kotlinx.android.synthetic.main.act_warn.*
 import kotlinx.android.synthetic.main.inc_back_title.*
 import ping.otmsapp.R
@@ -37,7 +34,7 @@ class WarnActivity : ViewBaseImp<WarnPresenter>(), WarnContract.View {
             //弹出处理预警信息提示框
             val warn = adapter?.getItem(position)
             DialogUtil.dialogSimple2(this@WarnActivity,"箱号:${warn?.code}\t${warn?.value}\n确定处理将删除本条记录","处理完成"){
-                IO.run { presenter.removeData(warn) }
+                IO.pool { presenter.removeData(warn) }
             }
         }
         lv_content.adapter = adapter
@@ -46,7 +43,7 @@ class WarnActivity : ViewBaseImp<WarnPresenter>(), WarnContract.View {
 
     override fun onResume() {
         super.onResume()
-        IO.run(presenter::updateData)
+        IO.pool(presenter::updateData)
     }
 
     override fun refreshList(warnItems: MutableList<WarnItem>?) {

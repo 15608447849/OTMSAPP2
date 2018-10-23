@@ -57,7 +57,7 @@ class HistoryListAdapter(val context: Context) : IAdapter(){
         val total = itemView.findViewById(R.id.tv_total) as TextView
         val initial = itemView.findViewById(R.id.tv_initial) as TextView
         val abnormal = itemView.findViewById(R.id.tv_abnormal) as TextView
-        val detail = itemView.findViewById(R.id.iv_detail) as ImageView
+        val detail = itemView.findViewById(R.id.ll_detail) as View
         init {
             itemView.tag = this
             total.isSelected = true

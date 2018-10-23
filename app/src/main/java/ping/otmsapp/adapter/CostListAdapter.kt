@@ -45,6 +45,7 @@ class CostListAdapter(val context: Context) : IAdapter(){
 
         vh.train.text = StrUtil.format("车次号:%s",feeDetail?.trainNo)
         vh.plate.text = StrUtil.format("车牌号:%s",feeDetail?.plateNo)
+        vh.mileage.text = StrUtil.format("里程数:%.2fkm",feeDetail?.mileage)
         vh.store_number.text = StrUtil.format("门店数:%d",feeDetail?.storeTotal)
         vh.box_number.text = StrUtil.format("总箱数:%d",feeDetail?.boxTotal)
         vh.should.text = StrUtil.format("应结费用:%.2f",feeDetail?.shouldFee)
@@ -79,7 +80,7 @@ class CostListAdapter(val context: Context) : IAdapter(){
         val should = itemView.findViewById(R.id.tv_should) as TextView
         val actual = itemView.findViewById(R.id.tv_actual) as TextView
 
-        val upload = itemView.findViewById(R.id.iv_upload) as ImageView
+        val upload = itemView.findViewById(R.id.ll_upload) as View
 
         val reject = itemView.findViewById(R.id.btn_reject) as Button
         val sure = itemView.findViewById(R.id.btn_sure) as Button

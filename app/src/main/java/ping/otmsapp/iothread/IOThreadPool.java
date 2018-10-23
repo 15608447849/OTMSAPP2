@@ -1,33 +1,32 @@
-package ping.otmsapp.zerocice;
+package ping.otmsapp.iothread;
 
-import java.io.Closeable;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-
-public class IOThreadPool implements Closeable {
+public class IOThreadPool implements IOInterface {
     private ThreadPoolExecutor executor;
+
     public IOThreadPool() {
         executor = createIoExecutor();
-        createIoExecutor();
     }
+
     //核心线程数,最大线程数,非核心线程空闲时间,存活时间单位,线程池中的任务队列
     private ThreadPoolExecutor createIoExecutor() {
 
-         return new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
+        return new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),
                 200,
                 30L,
                 TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(500),
                 new ThreadFactory(){
-
                     @Override
-                    public Thread newThread(Runnable r) {
-                        Thread thread = new Thread(r);
-                        thread.setName("t-pio-"+thread.getId());
+                    public Thread newThread(Runnable runnable) {
+                        Thread thread = new Thread(runnable);
+                        thread.setName("io-pool-"+thread.getId());
+                        thread.setDaemon(true);
                         return thread;
                     }
                 },
@@ -40,11 +39,17 @@ public class IOThreadPool implements Closeable {
                 }
         );
     }
-    public void post(Runnable runnable){
+
+    @Override
+    public void post(Runnable runnable) {
         executor.execute(runnable);
     }
+
     @Override
-    public void close(){
-        if (executor!=null) executor.shutdownNow();
+    public void close() {
+        if (executor!=null) {
+            executor.shutdownNow();
+            executor = null;
+        }
     }
 }

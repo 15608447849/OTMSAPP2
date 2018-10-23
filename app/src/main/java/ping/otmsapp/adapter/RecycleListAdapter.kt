@@ -14,8 +14,6 @@ import ping.otmsapp.tools.TimeUtil
 
 class RecycleListAdapter(val context: Context) : IAdapter(){
 
-
-
     /**
      * 回收列表
      */

@@ -1,13 +1,10 @@
 package ping.otmsapp.mvp.view
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
-import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import ping.otmsapp.R
@@ -132,7 +129,7 @@ class RecycleActivity: ViewBaseImp<RecyclePresenter>(), RecycleContract.View, Sc
     }
 
     override fun onScanner(codeBar: String?) {
-        IO.run{
+        IO.pool{
             val type = getSelectType()
             presenter.scanHandle(codeBar,type);
         }

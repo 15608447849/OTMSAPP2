@@ -18,6 +18,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="@dimen/dp3"
+                android:padding="@dimen/dp10"
                 android:background="@drawable/ic_bg_click_select"
                 />
             <TextView

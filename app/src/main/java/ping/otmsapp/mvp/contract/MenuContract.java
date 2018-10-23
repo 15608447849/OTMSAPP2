@@ -11,8 +11,8 @@ public class MenuContract {
     public interface View extends IView {
         void showWindows();
         void dismissWindows();
-       void bindPresenter(Presenter presenter);
-       void unbindPresenter();
+        void bindPresenter(Presenter presenter);
+        void unbindPresenter();
     }
     public interface Presenter extends IPresenter<MenuContract.View> {
         //打开历史任务
@@ -24,7 +24,7 @@ public class MenuContract {
         //创建快捷方式
         void createShortCut();
         //设置服务器信息
-        void setServerInfo();
+        void clearDispatch();
         //登出
         void logout();
         //退出

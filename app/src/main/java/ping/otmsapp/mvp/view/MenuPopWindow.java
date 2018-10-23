@@ -52,13 +52,14 @@ public class MenuPopWindow implements MenuContract.View {
 
     private MenuContract.Presenter presenter;
 
+    private Context context;
     private PopupWindow popupWindow;
     private View anchor;
     private DisplayMetrics outMetrics = new DisplayMetrics();
 
 
-    public MenuPopWindow(final Context context, View anchor) {
-
+    public MenuPopWindow(Context c, View anchor) {
+        this.context = c;
         this.anchor = anchor;
 
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -69,7 +70,6 @@ public class MenuPopWindow implements MenuContract.View {
 
         final View contentView= LayoutInflater.from(context).inflate(R.layout.pop_menu,null);
         ListView listView = (ListView) contentView.findViewById(R.id.pop_lv_content);
-
 
         final BaseAdapter baseAdapter = new BaseAdapter() {
 
@@ -102,6 +102,12 @@ public class MenuPopWindow implements MenuContract.View {
                         @Override
                         public void onAction() {
                             if (presenter!=null) presenter.openCost();
+                        }
+                    }),
+                    new MenuItem(R.drawable.ic_menu_clear, "清理调度", new MenuItem.Callback() {
+                        @Override
+                        public void onAction() {
+                            if (presenter!=null) presenter.clearDispatch();
                         }
                     }),
                     new MenuItem(R.drawable.ic_short_cut, "快捷方式", new MenuItem.Callback() {
@@ -208,8 +214,5 @@ public class MenuPopWindow implements MenuContract.View {
         this.presenter.unbindView();
         this.presenter = null;
     }
-
-
-
 
 }

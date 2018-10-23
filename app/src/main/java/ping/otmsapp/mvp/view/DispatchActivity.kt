@@ -17,7 +17,6 @@ import ping.otmsapp.entitys.UserInfo
 import ping.otmsapp.entitys.action.ClickManager
 import ping.otmsapp.entitys.dispatch.Dispatch
 import ping.otmsapp.entitys.scanner.ScannerCallback
-import ping.otmsapp.log.LLog
 import ping.otmsapp.mvp.basics.ViewBaseImp
 import ping.otmsapp.mvp.contract.DispatchContract
 import ping.otmsapp.mvp.contract.MenuContract
@@ -65,16 +64,16 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
             et_code_input.setText("");
         }.addNode(btn_take_out){
             //开始行程
-            IO.run{ presenter.take(); }
+            IO.pool{ presenter.take(); }
         }.addNode(btn_ake_back){
             //已返回仓库
-            IO.run{ presenter.back(); }
+            IO.pool{ presenter.back(); }
         }.addNode(btn_load_all){
             //装载全部
-            IO.run{ presenter.loadALL(); }
+            IO.pool{ presenter.loadALL(); }
         }.addNode(btn_abnormal){
             //提交货差
-            IO.run{ presenter.unloadAbnormal(adapter!!.index); }
+            IO.pool{ presenter.unloadAbnormal(adapter!!.index); }
         }.addNode(btn_add_recycle){
             if (adapter?.dispatch!=null && adapter?.dispatch?.state!! >= Dispatch.STATE.UNLOAD){
                 //打开回收列表
@@ -135,7 +134,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
     override fun onResume() {
         super.onResume()
         menuPopWindow?.bindPresenter(menuPresenter)
-        IO.run{presenter.validateDispatch()}
+        IO.pool{presenter.validateDispatch()}
     }
 
     override fun onPause() {
@@ -196,7 +195,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
 
     //接受扫码消息
     override fun onScanner(codeBar: String?) {
-        IO.run{
+        IO.pool{
             presenter.codeBarHandle(codeBar,adapter?.tabType!!, adapter?.index!!)
         }
     }
@@ -209,7 +208,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
 
     override fun dialog(btnName:String?,message: String?, callback: DispatchContract.Presenter.Callback?) {
         runOnUiThread {
-            DialogUtil.dialogSimple2(this, message,btnName) { IO.run {callback?.onCallback()} }
+            DialogUtil.dialogSimple2(this, message,btnName) { IO.pool {callback?.onCallback()} }
         }
     }
 

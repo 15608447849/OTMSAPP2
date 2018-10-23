@@ -7,12 +7,11 @@ import java.io.RandomAccessFile;
 import cn.hy.otms.rpcproxy.appInterface.SureFeeInfo;
 import cn.hy.otms.rpcproxy.dts.FileUploadRequest;
 import cn.hy.otms.rpcproxy.dts.FileUploadRespond;
-import cn.hy.otms.rpcproxy.dts.IDataTransferService;
 import cn.hy.otms.rpcproxy.dts.IDataTransferServicePrx;
 import cn.hy.otms.rpcproxy.dts.TransferSequence;
+import ping.otmsapp.entitys.IO;
 import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.contract.CostContract;
-import ping.otmsapp.storege.obs.IDataObjectAbs;
 import ping.otmsapp.tools.StrUtil;
 import ping.otmsapp.zerocice.IceServerAbs;
 
@@ -32,13 +31,14 @@ public class FileUploadModel extends IceServerAbs<IDataTransferServicePrx> imple
 
     @Override
     public boolean uploadImage(File image, String serverFilePath, String serverFileName) {
+
         RandomAccessFile raf = null;
         try{
             FileUploadRequest request =new FileUploadRequest(serverFilePath,serverFileName,image.length());
-            FileUploadRespond result = getProxy().request(request);
+            final FileUploadRespond result = getProxy().request(request);
             if(result ==null || result.array.length == 0) return false;
 
-                IDataTransferServicePrx prx = getProxy();
+                final IDataTransferServicePrx prx = getProxy();
                 raf = new RandomAccessFile(image,"r");
                 byte[] data = null;
                 long progress = 0;
@@ -46,7 +46,16 @@ public class FileUploadModel extends IceServerAbs<IDataTransferServicePrx> imple
                     if(data == null) data = new byte[(int) ts.size];
                     raf.seek(ts.start);
                     raf.read(data,0,(int) ts.size);
-                    prx.transfer(result.tag, ts, data);
+                    final TransferSequence _ts = ts;
+                    final byte[] _data  = data;
+
+                    IO.queue(new Runnable() {
+                        @Override
+                        public void run() {
+                            prx.transfer(result.tag, _ts, _data);
+                        }
+                    });
+
                     progress+=ts.size;
                     LLog.print(StrUtil.format("已上传:%d ,文件进度:%.2f",progress,((double) progress / (double) image.length())));
                 }

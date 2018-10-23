@@ -58,7 +58,7 @@ public class CostPresenter  extends PresenterViewBind<CostContract.View> impleme
            detail = new FeeDetail();
            detail.trainNo = sureFeeInfo.schedtn;
            detail.plateNo = sureFeeInfo.vechid;
-           detail.mileage =  sureFeeInfo.gpsm+sureFeeInfo.zcgpsm / 1000f;
+           detail.mileage =  (sureFeeInfo.gpsm+sureFeeInfo.zcgpsm) / 1000f;
            detail.boxTotal = sureFeeInfo.sumCnt;
            detail.storeTotal = sureFeeInfo.custom;
            detail.shouldFee = sureFeeInfo.initFee/100f;

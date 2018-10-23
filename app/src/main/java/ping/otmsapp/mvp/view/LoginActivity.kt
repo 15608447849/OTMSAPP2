@@ -1,6 +1,5 @@
 package ping.otmsapp.mvp.view
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -20,7 +19,7 @@ import ping.otmsapp.mvp.presenter.LoginPresenter
 import android.widget.EditText
 import ping.otmsapp.entitys.DefaultVersionUpImp
 import ping.otmsapp.tools.LeeApplicationAbs
-import ping.otmsapp.zerocice.IceIo
+import ping.otmsapp.zerocice.IceHelper
 
 
 class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.OnClickListener {
@@ -64,7 +63,7 @@ class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.On
         dialog.setView(v) //设置弹窗布局
         dialog.show()
 
-        val array = IceIo.get().obtainParamToSharedPreference(this)
+        val array = IceHelper.get().obtainParamToSharedPreference(this)
 
         tag.setText(array[0])
         address.setText(array[1])
@@ -77,7 +76,7 @@ class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.On
             val tagStr = tag.text.toString()
             val addressStr = address.text.toString()
             val portStr = port.text.toString()
-            IceIo.get().saveParamToSharedPreference(this,tagStr,addressStr,portStr.toInt())
+            IceHelper.get().saveParamToSharedPreference(this,tagStr,addressStr,portStr.toInt())
             //重启应用
             val i = baseContext.packageManager.getLaunchIntentForPackage(baseContext.packageName)
             i!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -91,7 +90,7 @@ class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.On
 
     override fun onResume() {
         super.onResume()
-        IO.run(DefaultVersionUpImp(this)) //升级
+        IO.pool(DefaultVersionUpImp(this)) //升级
         presenter.tryLogin()
     }
 
@@ -100,7 +99,7 @@ class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.On
         AppUtil.hideSoftInputFromWindow(this)
         val phone = et_phone.text.toString()
         val password = et_password.text.toString()
-        IO.run { presenter.login(phone, password) }
+        IO.pool { presenter.login(phone, password) }
     }
 
     override fun onLogin() {

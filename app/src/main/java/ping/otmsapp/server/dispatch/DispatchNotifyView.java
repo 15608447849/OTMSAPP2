@@ -20,7 +20,7 @@ public class DispatchNotifyView {
         if (userInfo != null){
             Trace trace = new Trace().fetch();
             if (vehicleInfo!=null && trace!=null){
-                remoteViews.setTextViewText(R.id.tv_notify_content, vehicleInfo.driverName+" - "+vehicleInfo.vehicleCode +(trace.state >= Trace.STATE.RECODE_ING ? "\n已行驶里程数:"+trace.mileage+"米":"\n暂未启程"));
+                remoteViews.setTextViewText(R.id.tv_notify_content, vehicleInfo.vehicleCode +" - "+(trace.state >= Trace.STATE.RECODE_ING ? "已行驶里程数:"+trace.mileage+"米":"暂未启程"));
 
             }else{
                 remoteViews.setTextViewText(R.id.tv_notify_content, "等待调度任务,下次获取时间: "+ TimeUtil.formatUTC(nextTime,"HH:mm:ss"));

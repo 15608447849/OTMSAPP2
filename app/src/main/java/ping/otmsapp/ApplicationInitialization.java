@@ -2,23 +2,20 @@ package ping.otmsapp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import ping.otmsapp.entitys.IO;
 import ping.otmsapp.entitys.scanner.ScannerApiThread;
 import ping.otmsapp.entitys.scanner.ScannerApi_UROVO;
 import ping.otmsapp.entitys.scanner.ScannerCallback;
 import ping.otmsapp.entitys.scanner.ScannerApi_SEUIC;
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.server.dispatch.LoopService;
 import ping.otmsapp.storege.db.SQLiteStore;
 import ping.otmsapp.tools.AppUtil;
 import ping.otmsapp.tools.LeeApplicationAbs;
-import ping.otmsapp.zerocice.IceIo;
+import ping.otmsapp.zerocice.IceHelper;
 
 
 public class ApplicationInitialization extends LeeApplicationAbs{
@@ -33,7 +30,7 @@ public class ApplicationInitialization extends LeeApplicationAbs{
         super.onCreateByAllProgress(processName);
         SQLiteStore.get().init(getApplicationContext());
         //添加网络状态过滤器
-        IceIo.get().addFilter(new IceIo.IFilter() {
+        IceHelper.get().addFilter(new IceHelper.IFilter() {
             @Override
             public void filter() throws Exception {
                 if (!AppUtil.isNetworkAvailable(getApplicationContext()))
@@ -41,7 +38,7 @@ public class ApplicationInitialization extends LeeApplicationAbs{
             }
         });
 
-        IceIo.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "192.168.1.120", 4061);
+        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "192.168.1.120", 4061);
     }
 
 

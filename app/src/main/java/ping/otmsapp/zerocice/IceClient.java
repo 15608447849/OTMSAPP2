@@ -79,7 +79,7 @@ public final class IceClient extends Thread implements Closeable{
     }
 
     public String getServerInfo() {
-        return "["+serverName+"-"+host+":"+port+"]";
+        return "["+Thread.currentThread().getName()+"#"+serverName+"-"+host+":"+port+"]";
     }
 
     // ice 连接配置

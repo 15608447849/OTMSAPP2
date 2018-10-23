@@ -37,7 +37,7 @@ public class DispatchPullHelper extends DispatchOperation {
             String traceNo = "";
             //获取本地调度信息
             Dispatch dispatch = new Dispatch().fetch();
-            if (dispatch!=null ){
+            if (dispatch!=null){
                 if (vehicleInfo!=null && dispatch.state <= Dispatch.STATE.TAKEOUT){
                     //装货中或者等待启程->获取本地调度任务车次号
                     traceNo = String.valueOf(vehicleInfo.carNumber);
@@ -55,9 +55,9 @@ public class DispatchPullHelper extends DispatchOperation {
     }
 
     private boolean dispatchInfoPause(DispatchInfo result) {
-        if (result==null) return true;
+        if (result == null) return true;
         if (result.flag == -1) return true; //-1 没有修改
-        if (result.flag==-10) {  //-10 强制删除当前任务
+        if (result.flag == -10) {  //-10 强制删除当前任务
             forceDelete();
             if (callback!=null) callback.updateDispatch();
             return false;
