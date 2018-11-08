@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import ping.otmsapp.log.LLog;
 
 public class ClickManager implements View.OnClickListener{
+
    private LinkedHashSet<IClick> iClicks = new LinkedHashSet<>();
 
     public ClickManager addNode(@NotNull View view , @NotNull Callback callback){

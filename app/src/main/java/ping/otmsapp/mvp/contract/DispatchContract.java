@@ -7,6 +7,7 @@ import ping.otmsapp.entitys.dispatch.Dispatch;
 import ping.otmsapp.entitys.dispatch.Store;
 import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.except.AbnormalList;
+import ping.otmsapp.entitys.upload.BillImage;
 import ping.otmsapp.mvp.basics.IPresenter;
 import ping.otmsapp.mvp.basics.IView;
 
@@ -66,6 +67,8 @@ public class DispatchContract {
 
     public interface Presenter extends IPresenter<DispatchContract.View>{
 
+
+
         interface Callback{
             void onCallback();
         }
@@ -86,7 +89,10 @@ public class DispatchContract {
         void loadALL();
         //卸货提交货差
         void unloadAbnormal(int index);
+
         void unloadAbnormalSure(int index);
+        //上传门店签收单据
+        void uploadBillImage(@Nullable BillImage billImage);
     }
 
 }

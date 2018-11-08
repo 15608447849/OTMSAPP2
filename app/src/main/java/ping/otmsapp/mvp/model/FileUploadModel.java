@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import cn.hy.otms.rpcproxy.appInterface.SureFeeInfo;
+import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
 import cn.hy.otms.rpcproxy.dts.FileUploadRequest;
 import cn.hy.otms.rpcproxy.dts.FileUploadRespond;
 import cn.hy.otms.rpcproxy.dts.IDataTransferServicePrx;
@@ -17,7 +18,9 @@ import ping.otmsapp.zerocice.IceServerAbs;
 
 public class FileUploadModel extends IceServerAbs<IDataTransferServicePrx> implements CostContract.Model{
 
-    private CostContract.Model model = new AppInterfaceModel();
+    private AppInterfaceModel model = new AppInterfaceModel();
+
+
 
     @Override
     public SureFeeInfo[] getCostBill(int userId, String y_m_d) {
@@ -32,34 +35,35 @@ public class FileUploadModel extends IceServerAbs<IDataTransferServicePrx> imple
     @Override
     public boolean uploadImage(File image, String serverFilePath, String serverFileName) {
 
+        if (image.length()==0) return true;
+        printParam("上传文件",image,serverFileName,serverFileName);
         RandomAccessFile raf = null;
         try{
+
             FileUploadRequest request =new FileUploadRequest(serverFilePath,serverFileName,image.length());
+
             final FileUploadRespond result = getProxy().request(request);
+            LLog.print(result.array.length);
             if(result ==null || result.array.length == 0) return false;
 
                 final IDataTransferServicePrx prx = getProxy();
                 raf = new RandomAccessFile(image,"r");
                 byte[] data = null;
+
                 long progress = 0;
                 for(TransferSequence ts :result.array){
-                    if(data == null) data = new byte[(int) ts.size];
+                    if (data == null) data = new byte[(int) ts.size];
                     raf.seek(ts.start);
                     raf.read(data,0,(int) ts.size);
-                    final TransferSequence _ts = ts;
-                    final byte[] _data  = data;
-
-                    IO.queue(new Runnable() {
-                        @Override
-                        public void run() {
-                            prx.transfer(result.tag, _ts, _data);
-                        }
-                    });
-
+                    prx.transfer(result.tag,ts,data);
                     progress+=ts.size;
-                    LLog.print(StrUtil.format("已上传:%d ,文件进度:%.2f",progress,((double) progress / (double) image.length())));
+                    final String str = StrUtil.format(serverFileName+" 大小: %d 进度 %d,百分比 %.2f",image.length(),progress,((double) progress / (double) image.length()));
+                    LLog.print(str);
                 }
+
                 prx.complete(result.tag);
+                final String strs = StrUtil.format("上传文件成功 %s, 服务器路径 %s",image.getAbsolutePath(),serverFilePath+serverFileName);
+                LLog.print(strs);
                 return true;
         }catch (Exception e){
             e.printStackTrace();
@@ -72,4 +76,9 @@ public class FileUploadModel extends IceServerAbs<IDataTransferServicePrx> imple
         }
         return false;
     }
+
+    public boolean addBackCard(String despatchId,String storeId,String fileName){
+       return model.addBackCard(despatchId,storeId,fileName);
+    }
+
 }

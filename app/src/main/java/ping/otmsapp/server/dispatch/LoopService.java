@@ -2,14 +2,11 @@ package ping.otmsapp.server.dispatch;
 
 import android.app.Notification;
 import android.content.Intent;
-import android.widget.RemoteViews;
 
 import ping.otmsapp.R;
 import ping.otmsapp.entitys.UserInfo;
 import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.map.GdMapLocation;
-import ping.otmsapp.entitys.map.Trace;
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.view.DispatchActivity;
 import ping.otmsapp.mvp.view.WarnActivity;
 import ping.otmsapp.tools.AppUtil;
@@ -17,13 +14,13 @@ import ping.otmsapp.tools.FrontNotification;
 import ping.otmsapp.tools.HearServer;
 import ping.otmsapp.tools.MediaUse;
 import ping.otmsapp.tools.PowerUse;
-import ping.otmsapp.tools.TimeUtil;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 public class LoopService extends HearServer implements DispatchOperation.Callback {
 
+    private ImageUpload billImageUpload = new ImageUpload();
     private DispatchSyncHelper dispatchSyncHelper = new DispatchSyncHelper();
     private DispatchPullHelper dispatchPullHelper = new DispatchPullHelper();
     private LocationHelper locationHelper = new LocationHelper();
@@ -82,22 +79,26 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
 
     @Override
     protected void executeTask() {
+        billImageUpload.billUpload();
+      try{
+          UserInfo userInfo = new UserInfo().fetch();
+          VehicleInfo vehicleInfo = new VehicleInfo().fetch();
 
-        UserInfo userInfo = new UserInfo().fetch();
-        VehicleInfo vehicleInfo = new VehicleInfo().fetch();
+          if (userInfo!=null && vehicleInfo!=null){
+              if (!location.isStart()) location.startLocation();
+          }else{
+              if (location.isStart()) location.stopLocation();
+          }
 
-        if (userInfo!=null && vehicleInfo!=null){
-            if (!location.isStart()) location.startLocation();
-        }else{
-            if (location.isStart()) location.stopLocation();
-        }
+          if (location.isStart()) checkGps();
 
-        if (location.isStart()) checkGps();
+          dispatchSyncHelper.sync(userInfo,vehicleInfo);
+          dispatchPullHelper.pull(userInfo,vehicleInfo);
+          dispatchNotifyView.refreshView(userInfo,vehicleInfo,getNextTime());
 
-        dispatchSyncHelper.sync(userInfo,vehicleInfo);
-        dispatchPullHelper.pull(userInfo,vehicleInfo);
-        dispatchNotifyView.refreshView(userInfo,vehicleInfo,getNextTime());
-
+      }catch (Exception e){
+          e.printStackTrace();
+      }
     }
 
     @Override

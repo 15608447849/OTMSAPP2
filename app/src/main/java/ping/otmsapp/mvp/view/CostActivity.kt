@@ -28,6 +28,8 @@ import java.util.*
 
 class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
 
+    private var tempFile :File ? = null
+
     private var mYear = 0;
     private var mMonth = 0;
     private var mDay = 0;
@@ -123,7 +125,7 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
         }
     }
 
-    private var tempFile :File ? = null
+
 
     //弹出图片选择界面
     override fun selectPicture(imageFile: File) {

@@ -71,7 +71,6 @@ public final class IceClient extends Thread implements Closeable{
         void reboot(){
             closeCommunicator();
         }
-
     }
 
     public Build getBuild(){

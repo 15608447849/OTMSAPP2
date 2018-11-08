@@ -2,7 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/list_item_container1"
-    android:background="@drawable/ic_bg_click_select">
+    >
     <RelativeLayout
         style="@style/list_item_container2">
 
@@ -19,6 +19,8 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
                 android:src="@drawable/ic_checkbox_off"
+                android:padding="@dimen/dp10"
+                android:background="@drawable/ic_bg_click_select"
                 />
             <!-- 门店名字-->
             <TextView
@@ -67,7 +69,16 @@
                 android:layout_height="wrap_content"
                 android:text="已装载: [0/10]"
                 />
+            <Button
+                android:id="@+id/btn_upload_receipt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上传回单"
+                android:background="@drawable/ic_btn_bg_click_select"
+                android:visibility="gone"
+                />
         </LinearLayout>
+
         <View
             style="@style/segment_line"
             android:layout_below="@id/ll_content"

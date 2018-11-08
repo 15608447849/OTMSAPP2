@@ -236,6 +236,17 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
         return false;
     }
 
+    public boolean addBackCard(String despatchId,String storeId,String fileName){
+        try {
+            printParam("上传回单信息",despatchId,storeId,fileName);
+            //调度车次、门店编码、文件名
+            BoolMessage boolMessage = getProxy().addBackCard(convert(despatchId,storeId,fileName));
+            return boolMessage.flag;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 
 

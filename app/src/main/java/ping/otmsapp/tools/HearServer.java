@@ -27,7 +27,7 @@ public abstract class HearServer extends Service implements Runnable {
 
     private volatile boolean isRun = true;
 
-    private long interval = 30 * 1000L;
+    private long interval = 5 * 1000L;
 
     public void setInterval(long interval) {
         this.interval = interval;
@@ -39,7 +39,7 @@ public abstract class HearServer extends Service implements Runnable {
         power = new PowerUse(getApplicationContext(),getClass().getSimpleName());
         notification = createForeNotification(new FrontNotification.Build(getApplicationContext()));
         thread.setDaemon(true);
-        thread.setName(getClass()+"-"+Thread.currentThread().getId());
+        thread.setName(getClass().getSimpleName()+"-"+Thread.currentThread().getId());
         thread.start();
     }
 

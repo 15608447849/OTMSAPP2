@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 
@@ -12,9 +13,10 @@ import ping.otmsapp.R
 import ping.otmsapp.adapter.infs.IAdapter
 import ping.otmsapp.entitys.dispatch.Dispatch
 import ping.otmsapp.entitys.dispatch.Store
+import ping.otmsapp.log.LLog
 import ping.otmsapp.tools.StrUtil
 
-class DispatchListAdapter(val context: Context) : BaseAdapter(){
+class DispatchListAdapter(val context: Context) : IAdapter(){
 
     /**
      * 调度对象
@@ -56,6 +58,17 @@ class DispatchListAdapter(val context: Context) : BaseAdapter(){
         vh.state.setImageResource(R.drawable.ic_wait)
         vh.storeName.text = store?.storeName
         vh.order.text = StrUtil.format("配送顺序: %d", store?.specifiedOrder)
+
+        vh.checkBox.setOnClickListener{
+            callback?.onItemViewClicked(it,position)
+        }
+
+        vh.uploadReceipt.setOnClickListener{
+            callback?.onItemViewClicked(it,position)
+        }
+        vh.uploadReceipt.visibility = View.GONE;
+
+
         if (position == index) vh.checkBox.setImageResource(R.drawable.ic_checkbox_on)
 
         when(tabType){
@@ -85,11 +98,12 @@ class DispatchListAdapter(val context: Context) : BaseAdapter(){
     }
 
     private fun unloadHandler(vh: ViewHolder, store: Store?,position: Int) {
-        if(dispatch?.state!! != Dispatch.STATE.UNLOAD) return
+        if(!(dispatch?.state!! == Dispatch.STATE.UNLOAD || dispatch?.state!! == Dispatch.STATE.BACK)) return
         vh.stateText.text = StrUtil.format("卸载进度: [%d/%d]", store?.unloadScanIndex, store?.boxSum)
         if (store?.unloadScanIndex!! == store.boxSum) {
             vh.state.setImageResource(R.drawable.ic_complete)
         }
+        vh.uploadReceipt.visibility = View.VISIBLE
         vh.itemView.visibility = View.VISIBLE
     }
 
@@ -101,6 +115,7 @@ class DispatchListAdapter(val context: Context) : BaseAdapter(){
         val state = itemView.findViewById(R.id.iv_state) as ImageView
         val order = itemView.findViewById(R.id.tv_order) as TextView
         val stateText = itemView.findViewById(R.id.tv_state) as TextView
+        val uploadReceipt = itemView.findViewById(R.id.btn_upload_receipt) as Button
 
         init {
             itemView.tag = this

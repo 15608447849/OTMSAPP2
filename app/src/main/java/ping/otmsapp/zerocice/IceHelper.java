@@ -107,8 +107,6 @@ public class IceHelper implements Closeable {
         this.isPrint = f;
     }
 
-
-
     private HashMap<String,String> params = new HashMap<>();
 
     public synchronized void addParams(String k, String v) {

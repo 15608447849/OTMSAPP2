@@ -3,6 +3,7 @@ package ping.otmsapp.iothread;
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.WorkHandler;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
@@ -20,11 +21,33 @@ public class IOThreadDisruptor implements IOInterface{
     private static class RunnableEventHandler implements EventHandler<RunnableEvent> {
 
         @Override
-        public void onEvent(RunnableEvent runnableEvent, long sequence, boolean endOfBatch) throws Exception {
-            if (runnableEvent.runnable == null) return;
-            runnableEvent.runnable.run();
-            runnableEvent.runnable = null;
+        public void onEvent(RunnableEvent runnableEvent, long sequence, boolean endOfBatch){
 
+            if (runnableEvent.runnable == null) return;
+            LLog.print(this+" - "+sequence);
+            try {
+                runnableEvent.runnable.run();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            runnableEvent.runnable = null;
+        }
+    }
+
+    private static class RunnableEventHandler2 implements WorkHandler<RunnableEvent> {
+
+        @Override
+        public void onEvent(RunnableEvent runnableEvent) throws Exception {
+            if (runnableEvent.runnable == null) return;
+//            LLog.print(this.hashCode() +" - "+runnableEvent);
+            try {
+                runnableEvent.runnable.run();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            runnableEvent.runnable = null;
         }
     }
 
@@ -57,7 +80,12 @@ public class IOThreadDisruptor implements IOInterface{
                 new YieldingWaitStrategy()
         );
 
-        disruptor.handleEventsWith(new RunnableEventHandler());
+//        disruptor.handleEventsWith(new RunnableEventHandler());
+//        disruptor.handleEventsWith(new RunnableEventHandler());
+
+
+        disruptor.handleEventsWithWorkerPool(new RunnableEventHandler2(),new RunnableEventHandler2(),new RunnableEventHandler2());
+
 
         ringBuffer = disruptor.start();
     }
@@ -66,7 +94,6 @@ public class IOThreadDisruptor implements IOInterface{
     public void post(Runnable runnable) {
         long index = ringBuffer.next();
         try {
-            LLog.print(Thread.currentThread()+"# "+"获取序列:"+ index);
             RunnableEvent event = ringBuffer.get(index);
             event.runnable = runnable;
         } finally {

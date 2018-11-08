@@ -1,5 +1,7 @@
 package ping.otmsapp.mvp.presenter;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,6 +12,8 @@ import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.except.AbnormalList;
 import ping.otmsapp.entitys.map.Trace;
 import ping.otmsapp.entitys.tuples.Tuple2;
+import ping.otmsapp.entitys.upload.BillImage;
+import ping.otmsapp.entitys.upload.BillImageList;
 import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.basics.PresenterViewBind;
 import ping.otmsapp.mvp.contract.DispatchContract;
@@ -273,8 +277,20 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         view.updateDispatch();
     }
 
+    @Override
+    public void uploadBillImage(@Nullable BillImage billImage) {
+        VehicleInfo vehicleInfo = new VehicleInfo().fetch();
+        if (vehicleInfo==null) return;
+        assert billImage != null;
 
+        billImage.dispatchId = String.valueOf(vehicleInfo.carNumber);
 
+        BillImageList list = new BillImageList().fetch();
+        if (list == null) list = new BillImageList();
+        list.list.add(billImage);
+        list.save();
+        if (isBindView()) view.toast("门店单据已提交,稍后将自动上传");
+    }
 
 
 }

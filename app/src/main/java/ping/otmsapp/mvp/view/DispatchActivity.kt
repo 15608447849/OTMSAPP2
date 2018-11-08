@@ -2,9 +2,15 @@ package ping.otmsapp.mvp.view
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.widget.*
 import kotlinx.android.synthetic.main.act_dispatch.*
 import kotlinx.android.synthetic.main.inc_dispatch_button.*
@@ -14,24 +20,23 @@ import ping.otmsapp.R
 import ping.otmsapp.adapter.DispatchListAdapter
 import ping.otmsapp.entitys.IO
 import ping.otmsapp.entitys.UserInfo
-import ping.otmsapp.entitys.action.ClickManager
 import ping.otmsapp.entitys.dispatch.Dispatch
 import ping.otmsapp.entitys.scanner.ScannerCallback
+import ping.otmsapp.entitys.upload.BillImage
 import ping.otmsapp.mvp.basics.ViewBaseImp
 import ping.otmsapp.mvp.contract.DispatchContract
 import ping.otmsapp.mvp.contract.MenuContract
 import ping.otmsapp.mvp.presenter.DispatchPresenter
 import ping.otmsapp.mvp.presenter.MenuPresenter
 import ping.otmsapp.tools.*
+import java.io.File
 
 /**
  * 调度页面
  */
-class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener, ScannerCallback, DispatchContract.View {
+class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedChangeListener,  ScannerCallback, DispatchContract.View {
 
     private var adapter:DispatchListAdapter? = null
-
-    private val click = ClickManager()
 
     private var menuPopWindow: MenuContract.View? = null
 
@@ -39,22 +44,28 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
 
     private var mediaUse:MediaUse? = null
 
+    private var tempFile : File? = null
+    private var billImage : BillImage? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_dispatch)
         //点击监听
-        click.addNode(rl_drop_down_check){
+        rl_drop_down_check.setOnClickListener {
             //展开操作区
             rl_drop_down_check.visibility = View.GONE
             rl_dispatch_area.visibility = View.VISIBLE
             rl_pull_up_check.visibility = View.VISIBLE
-        }.addNode(rl_pull_up_check){
+        }
+        rl_pull_up_check.setOnClickListener {
             //收起操作区
             AppUtil.hideSoftInputFromWindow(this@DispatchActivity)
             rl_drop_down_check.visibility = View.VISIBLE
             rl_dispatch_area.visibility = View.GONE
             rl_pull_up_check.visibility = View.GONE
-        }.addNode(btn_code_sure){
+        }
+        btn_code_sure.setOnClickListener {
             //二维码手动输入
             AppUtil.hideSoftInputFromWindow(this@DispatchActivity)
             val str = et_code_input.text.toString()
@@ -62,19 +73,24 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
                 onScanner(str)
             }
             et_code_input.setText("");
-        }.addNode(btn_take_out){
+        }
+        btn_take_out.setOnClickListener {
             //开始行程
             IO.pool{ presenter.take(); }
-        }.addNode(btn_ake_back){
+        }
+        btn_ake_back.setOnClickListener {
             //已返回仓库
             IO.pool{ presenter.back(); }
-        }.addNode(btn_load_all){
+        }
+        btn_load_all.setOnClickListener {
             //装载全部
             IO.pool{ presenter.loadALL(); }
-        }.addNode(btn_abnormal){
+        }
+        btn_abnormal.setOnClickListener {
             //提交货差
             IO.pool{ presenter.unloadAbnormal(adapter!!.index); }
-        }.addNode(btn_add_recycle){
+        }
+        btn_add_recycle.setOnClickListener {
             if (adapter?.dispatch!=null && adapter?.dispatch?.state!! >= Dispatch.STATE.UNLOAD){
                 //打开回收列表
                 val intent = Intent(this@DispatchActivity,RecycleActivity::class.java)
@@ -90,8 +106,16 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         rg_tab.setOnCheckedChangeListener(this)
         //列表适配器
         adapter= DispatchListAdapter( this)
+
+        adapter?.setCallback{ view,position ->
+            when ( view.id ){
+                R.id.iv_checkbox -> checkBoxClick(position)
+                R.id.btn_upload_receipt -> uploadReceipt(position);
+            }
+
+        }
         lv_content.adapter = adapter
-        lv_content.onItemClickListener = this
+
         //默认选中
         rbtn_load.toggle()
 
@@ -103,7 +127,6 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         }
 
         mediaUse = MediaUse(this)
-
 
         iv_logo.setOnClickListener {
             //弹出个人信息
@@ -130,6 +153,117 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         }
 
     }
+
+    //上传回单
+    private fun uploadReceipt(position: Int) {
+        try {
+            //点击上传图片
+            tempFile = File(Environment.getExternalStorageDirectory(), System.currentTimeMillis().toString() + ".png")
+            if (!tempFile!!.exists()) {
+                if (!tempFile!!.createNewFile()) {
+                    return
+                }
+            }
+            billImage = BillImage()
+            billImage?.path = tempFile?.canonicalPath
+            billImage?.storeId = adapter?.getItem(position)?.customerAgency
+            openSelectPictureDialog()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //打开图片选择窗口
+    private fun openSelectPictureDialog() {
+        val items = arrayOf<CharSequence>("相册", "拍照")
+        DialogUtil.createSimpleListDialog(this, "请选择发票图片", items, true) { dialog, which ->
+
+            val intent = Intent()
+
+            when (which) {
+                0 -> { //打开相册
+                    intent.action = Intent.ACTION_GET_CONTENT
+                    intent.type = "image/*"
+                    startActivityForResult(intent, 100)
+                }
+                1 -> { //拍照
+                    intent.action = MediaStore.ACTION_IMAGE_CAPTURE
+                    intent.addCategory(Intent.CATEGORY_DEFAULT)
+                    val uri = Uri.fromFile(tempFile)
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                    startActivityForResult(intent, 200)
+                }
+            }
+        }
+    }
+    //图片选择回调
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (resultCode != RESULT_OK) {
+            toast("图片不可用")
+            return
+        }
+        IO.pool {
+
+            try {
+                if (requestCode == 100) { //相册选择
+                    val uri = data?.data
+
+                    val cr = this.contentResolver
+                    val input = cr.openInputStream(uri);
+                    val bitmap = BitmapFactory.decodeStream(input)
+                    if (AppUtil.bitmap2File(bitmap,tempFile)){
+                        previewPictures(bitmap)
+                    }
+                } else if (requestCode == 200) { //拍照
+                    val bitmap = BitmapFactory.decodeStream(tempFile?.inputStream())
+                    previewPictures(bitmap)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    //预览图片
+    private fun previewPictures(bitmap: Bitmap) {
+        runOnUiThread {
+            val inflater = LayoutInflater.from(this)
+            val v = inflater.inflate(R.layout.dialog_cost_upload_image, null)
+
+            val iv = v.findViewById(R.id.iv_preview) as ImageView
+            val upload = v.findViewById(R.id.btn_upload) as Button
+            val cancel = v.findViewById(R.id.btn_cancel) as Button
+
+            val builder = AlertDialog.Builder(this)
+            builder.setCancelable(false)
+            val dialog = builder.create();
+            dialog.setView(v) //设置弹窗布局
+            dialog.show()
+
+//            dialog.window.setContentView(v);
+            iv.setImageBitmap(bitmap) //图片显示
+
+                val onClickListener = View.OnClickListener {
+                    dialog.dismiss()
+                    iv.setImageBitmap(null)
+                    bitmap.recycle()
+                    if (it.id == upload.id){
+                        //上传图片
+                        IO.pool {
+                            presenter.uploadBillImage(billImage)
+                            tempFile = null
+                            billImage = null
+                        }
+
+                }
+
+            }
+            cancel.setOnClickListener(onClickListener)
+            upload.setOnClickListener(onClickListener)
+
+        }
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -184,7 +318,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
     }
 
     //列表子项点击
-    override fun onItemClick(viewGroup: AdapterView<*>?, view: View?, position:Int, positionLong: Long) {
+    fun checkBoxClick( position:Int) {
         if(adapter?.index == position){
             adapter?.index = -1
         } else{
