@@ -63,7 +63,7 @@ public class DispatchModel implements DispatchContract.model{
 
     @Override
     public boolean checkStoreIsToUnLoadState(Store store) {
-        //如果当前门店已扫码数量 = 此门店总数量 ->> 改变状态为 等待卸货
+        //如果当前门店已扫码数量 = 此门店总数量 >> 改变状态为 等待卸货
         if (store.loadScanIndex == store.boxSum){
             //此门店进入卸货状态
             store.state = Store.STATE.UNLOAD;

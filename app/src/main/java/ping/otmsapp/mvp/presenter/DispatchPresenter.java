@@ -132,7 +132,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
             return;
         }
         if (dispatch.state == Dispatch.STATE.TAKEOUT){
-            view.dialog("准备发出", "确定将记录您的行驶轨迹,请确保开启GPS定位", new Callback() {
+            view.dialog("准备出发", "确定将记录您的行驶轨迹,请确保开启GPS定位", new Callback() {
                 @Override
                 public void onCallback() {
                     takeSure();
@@ -147,6 +147,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
     public void takeSure() {
         Dispatch dispatch = new Dispatch().fetch();
         if (dispatch==null) return;
+        dispatch.changeTakeOutTime = System.currentTimeMillis();
         dispatch.state = Dispatch.STATE.UNLOAD;
         dispatch.save();
         Trace trace = new Trace().fetch();
@@ -173,7 +174,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
                 }
             });
         }else{
-            view.toast("操作失败");
+            view.toast("操作失败\n请先卸货完成在进行操作");
         }
     }
 

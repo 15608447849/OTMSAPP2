@@ -5,18 +5,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import cn.hy.otms.rpcproxy.appInterface.SureFeeInfo;
-import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
-import cn.hy.otms.rpcproxy.dts.FileUploadRequest;
-import cn.hy.otms.rpcproxy.dts.FileUploadRespond;
-import cn.hy.otms.rpcproxy.dts.IDataTransferServicePrx;
-import cn.hy.otms.rpcproxy.dts.TransferSequence;
-import ping.otmsapp.entitys.IO;
-import ping.otmsapp.log.LLog;
+import cn.hy.otms.rpcproxy.dts.FileUploadInfo;
+import cn.hy.otms.rpcproxy.dts.IFileUploadServicePrx;
 import ping.otmsapp.mvp.contract.CostContract;
-import ping.otmsapp.tools.StrUtil;
 import ping.otmsapp.zerocice.IceServerAbs;
 
-public class FileUploadModel extends IceServerAbs<IDataTransferServicePrx> implements CostContract.Model{
+public class FileUploadModel extends IceServerAbs<IFileUploadServicePrx> implements CostContract.Model{
 
     private AppInterfaceModel model = new AppInterfaceModel();
 
@@ -39,32 +33,45 @@ public class FileUploadModel extends IceServerAbs<IDataTransferServicePrx> imple
         printParam("上传文件",image,serverFileName,serverFileName);
         RandomAccessFile raf = null;
         try{
+            final IFileUploadServicePrx prx = getProxy();
+            FileUploadInfo info =new FileUploadInfo(serverFilePath,serverFileName,image.length());
 
-            FileUploadRequest request =new FileUploadRequest(serverFilePath,serverFileName,image.length());
+            String tag  = getProxy().request(info);
+            if(tag ==null || tag.length() == 0) return false;
+            if(tag.equals("wait")){
+                Thread.sleep(2000);
+                return uploadImage(image,serverFilePath,serverFileName);
+            }
+            raf = new RandomAccessFile(image,"r");
+            byte[] bytes = new byte[1024 * 2];
+            long pos  = 0L;
+            long len = image.length();
+            int size = 0;
 
-            final FileUploadRespond result = getProxy().request(request);
-            LLog.print(result.array.length);
-            if(result ==null || result.array.length == 0) return false;
+            while (pos < len){
 
-                final IDataTransferServicePrx prx = getProxy();
-                raf = new RandomAccessFile(image,"r");
-                byte[] data = null;
-
-                long progress = 0;
-                for(TransferSequence ts :result.array){
-                    if (data == null) data = new byte[(int) ts.size];
-                    raf.seek(ts.start);
-                    raf.read(data,0,(int) ts.size);
-                    prx.transfer(result.tag,ts,data);
-                    progress+=ts.size;
-                    final String str = StrUtil.format(serverFileName+" 大小: %d 进度 %d,百分比 %.2f",image.length(),progress,((double) progress / (double) image.length()));
-                    LLog.print(str);
+                if (len - pos >= bytes.length) {
+                    size = bytes.length;
+                }else{
+                    size = (int)(len - pos);
                 }
+                //移动到起点
+                raf.seek(pos);
 
-                prx.complete(result.tag);
-                final String strs = StrUtil.format("上传文件成功 %s, 服务器路径 %s",image.getAbsolutePath(),serverFilePath+serverFileName);
-                LLog.print(strs);
-                return true;
+                //读取数据
+                raf.read(bytes,0,size);
+
+                //写入数据
+                prx.transfer(tag,pos,bytes);
+
+                //起点下移
+                pos+=size;
+            }
+
+            raf.close();
+            prx.complete(tag);
+
+            return true;
         }catch (Exception e){
             e.printStackTrace();
         }finally {
