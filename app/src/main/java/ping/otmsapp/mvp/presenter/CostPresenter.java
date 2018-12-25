@@ -14,7 +14,7 @@ import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.basics.PresenterViewBind;
 import ping.otmsapp.mvp.contract.CostContract;
 import ping.otmsapp.mvp.model.FileUploadModel;
-import ping.otmsapp.tools.JsonUti;
+import ping.otmsapp.tools.JsonUtil;
 import ping.otmsapp.tools.StrUtil;
 
 public class CostPresenter  extends PresenterViewBind<CostContract.View> implements CostContract.Presenter {
@@ -38,7 +38,7 @@ public class CostPresenter  extends PresenterViewBind<CostContract.View> impleme
             else sb.append(day);
 
             SureFeeInfo[] arr = model.getCostBill(userInfo.id,sb.toString());
-            LLog.print(JsonUti.javaBeanToJson(arr));
+            LLog.print(JsonUtil.javaBeanToJson(arr));
             //转换数据
             List<FeeDetail> list = new ArrayList<>();
             if (arr!=null && arr.length>0){

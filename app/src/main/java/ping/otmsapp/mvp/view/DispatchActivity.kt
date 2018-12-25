@@ -305,7 +305,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         runOnUiThread{
             adapter?.dispatch = Dispatch().fetch()
             adapter?.notifyDataSetChanged()
-            //LLog.print("更新调度单\n"+ JsonUti.javaBeanToJson(adapter?.dispatch))
+            //LLog.print("更新调度单\n"+ JsonUtil.javaBeanToJson(adapter?.dispatch))
             tv_state.text = when(adapter?.dispatch?.state){
                 Dispatch.STATE.LOAD -> "装载总进度:[${adapter?.dispatch?.loadScanBoxIndex}/${adapter?.dispatch?.storeBoxSum}]"
                 Dispatch.STATE.TAKEOUT -> "等待启程出发"

@@ -73,6 +73,7 @@ public class FrontNotification {
             this.flags = flags;
             return this;
         }
+
         public FrontNotification.Build setDefaults(int defaults){
             this.defaults = defaults;
             return this;

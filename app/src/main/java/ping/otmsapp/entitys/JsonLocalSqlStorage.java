@@ -4,7 +4,7 @@ package ping.otmsapp.entitys;
 import ping.otmsapp.storege.db.SQLiteStore;
 import ping.otmsapp.storege.inf.ICacheMap;
 import ping.otmsapp.storege.obs.IDataObjectAbs;
-import ping.otmsapp.tools.JsonUti;
+import ping.otmsapp.tools.JsonUtil;
 
 /**
  * Created by Leeping on 2018/6/28.
@@ -20,12 +20,12 @@ public class JsonLocalSqlStorage extends IDataObjectAbs {
 
     @Override
     protected String convert(Object object) {
-        return JsonUti.javaBeanToJson(object);
+        return JsonUtil.javaBeanToJson(object);
     }
 
     @Override
     protected Object reverse(String data) {
-        return JsonUti.jsonToJavaBean(data,this.getClass());
+        return JsonUtil.jsonToJavaBean(data,this.getClass());
     }
 
 

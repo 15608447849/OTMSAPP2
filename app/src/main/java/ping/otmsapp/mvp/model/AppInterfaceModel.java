@@ -13,7 +13,7 @@ import ping.otmsapp.entitys.recycler.RecyclerBox;
 import ping.otmsapp.mvp.contract.CostContract;
 import ping.otmsapp.mvp.contract.HistoryContract;
 import ping.otmsapp.mvp.contract.WarnContract;
-import ping.otmsapp.tools.JsonUti;
+import ping.otmsapp.tools.JsonUtil;
 import ping.otmsapp.zerocice.IceServerAbs;
 
 public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model,HistoryContract.Model,CostContract.Model {
@@ -110,7 +110,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public BoolMessage addAbnormal(Abnormal abnormal){
         try{
-            printParam("添加箱子异常信息", JsonUti.javaBeanToJson(abnormal));
+            printParam("添加箱子异常信息", JsonUtil.javaBeanToJson(abnormal));
 
             //异常发生人用户码,异常车次,异常机构码,异常箱号,异常类型,发生异常时间,异常说明
             //异常处理人用户码,异常处理机构码,异常处理时间,异常处理说明
@@ -130,7 +130,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public BoolMessage updateRecycleBoxSync(RecyclerBox recyclerBox){
         try{
-            printParam("正常回收箱",JsonUti.javaBeanToJson(recyclerBox));
+            printParam("正常回收箱", JsonUtil.javaBeanToJson(recyclerBox));
             //调度车次,用户码,箱号,回收类型,回收时间,回收时门店ID
             return getProxy().updateRecycle(convert(
                     recyclerBox.carNumber,

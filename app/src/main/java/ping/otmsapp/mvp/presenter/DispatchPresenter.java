@@ -167,7 +167,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
             return;
         }
         if (dispatch.state == Dispatch.STATE.BACK){
-            view.dialog("返回仓库", "如果您已成功返回仓库,将结束行程记录", new Callback() {
+            view.dialog("返回仓库", "注意:请确认已上传回单\n如果您已成功返回仓库,将结束行程记录", new Callback() {
                 @Override
                 public void onCallback() {
                     backSure();

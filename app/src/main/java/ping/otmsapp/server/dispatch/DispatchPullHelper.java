@@ -22,7 +22,7 @@ import ping.otmsapp.entitys.recycler.RecyclerBoxList;
 import ping.otmsapp.entitys.recycler.RecyclerBoxListSync;
 import ping.otmsapp.entitys.warn.WarnList;
 import ping.otmsapp.log.LLog;
-import ping.otmsapp.tools.JsonUti;
+import ping.otmsapp.tools.JsonUtil;
 
 /**
  * 获取调度单
@@ -146,7 +146,7 @@ public class DispatchPullHelper extends DispatchOperation {
         //保存
         saveToSQLite(vehicleInfo,dispatch,dispatchSync,trace,traceSync,abnormalList,abnormalListSync,recyclerBoxList,recyclerBoxListSync,warnList);
 
-        LLog.print("调度信息:\n"+ JsonUti.javaBeanToJson(dispatch));
+        LLog.print("调度信息:\n"+ JsonUtil.javaBeanToJson(dispatch));
         if (callback!=null) callback.updateDispatch();
     }
 

@@ -17,6 +17,7 @@ import ping.otmsapp.log.LLog;
  */
 
 public abstract class HearServer extends Service implements Runnable {
+
     private final Thread thread = new Thread(this);
 
     private PendingIntent pendingIntentOp; //闹钟使用
@@ -63,7 +64,6 @@ public abstract class HearServer extends Service implements Runnable {
         stopAlarm();
         isRun = false;
         unlockSelf();
-
     }
 
      protected abstract FrontNotification createForeNotification(FrontNotification.Build build);
@@ -85,6 +85,7 @@ public abstract class HearServer extends Service implements Runnable {
         }
     }
     protected abstract void executeTask();
+
     public void startAlarmManagerHeartbeat() {
         if (pendingIntentOp==null){
             Intent intent = new Intent();
@@ -100,6 +101,7 @@ public abstract class HearServer extends Service implements Runnable {
             }
         }
     }
+
     public void stopAlarm(){
         if (pendingIntentOp!=null){
             AlarmManager am = (AlarmManager) getApplicationContext().getSystemService(ALARM_SERVICE);
@@ -107,14 +109,17 @@ public abstract class HearServer extends Service implements Runnable {
             am.cancel(pendingIntentOp);
         }
     }
+
     protected long getNextTime() {
         return System.currentTimeMillis() + interval;
     }
+
     private void lockSelf() {
         synchronized (this){
             try { wait(); } catch (InterruptedException ignored) { }
         }
     }
+
     private void unlockSelf(){
         synchronized (this){ notifyAll(); }
     }

@@ -46,8 +46,6 @@ public class PowerUse {
     //获取唤醒锁 点亮屏幕
     public void startPowerWakeLockByScreen(){
         if (wakeLock==null){
-            LLog.print("亮屏");
-//            wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, tag);
             wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, tag);
             wakeLock.acquire(10000L /*10s*/);
             screenUnlock();

@@ -5,9 +5,7 @@ import cn.hy.otms.rpcproxy.sysmanage.SysManageServicePrx;
 import cn.hy.otms.rpcproxy.sysmanage.UpdateRequestPackage;
 import cn.hy.otms.rpcproxy.sysmanage.UpdateResponsePackage;
 import cn.hy.otms.rpcproxy.sysmanage.UserGlobalInfo;
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.contract.LoginContract;
-import ping.otmsapp.tools.JsonUti;
 import ping.otmsapp.zerocice.IceServerAbs;
 
 public class SysModel extends IceServerAbs<SysManageServicePrx> implements LoginContract.Model {

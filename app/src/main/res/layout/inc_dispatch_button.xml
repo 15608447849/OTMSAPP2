@@ -11,7 +11,8 @@
         <Button
             android:id="@+id/btn_load_all"
             style="@style/inc_dispatch_button_public"
-            android:text="装载全部" />
+            android:text="装载全部"
+            android:visibility="gone"/>
         <Button
             android:id="@+id/btn_abnormal"
             style="@style/inc_dispatch_button_public"

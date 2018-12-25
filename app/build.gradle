@@ -7,7 +7,7 @@ android {
         applicationId "ping.otmsapp"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 5
+        versionCode 6
         versionName "老百姓运输调度司机终端"
     }
     buildTypes {

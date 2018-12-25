@@ -14,7 +14,7 @@ import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.basics.PresenterViewBind;
 import ping.otmsapp.mvp.contract.HistoryContract;
 import ping.otmsapp.mvp.model.AppInterfaceModel;
-import ping.otmsapp.tools.JsonUti;
+import ping.otmsapp.tools.JsonUtil;
 import ping.otmsapp.tools.StrUtil;
 
 public class HistoryPresenter extends PresenterViewBind<HistoryContract.View> implements HistoryContract.Presenter{
@@ -39,7 +39,7 @@ public class HistoryPresenter extends PresenterViewBind<HistoryContract.View> im
             else sb.append(day);
 
             AppSchedvech[] arr = model.getHistoryTask(userInfo.id,sb.toString());
-            LLog.print(JsonUti.javaBeanToJson(arr));
+            LLog.print(JsonUtil.javaBeanToJson(arr));
             //转换数据
             List<DispatchDetail> list = new ArrayList<>();
             if (arr!=null && arr.length>0){

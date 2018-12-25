@@ -26,7 +26,7 @@ import ping.otmsapp.entitys.recycler.RecyclerBoxListSync;
 import ping.otmsapp.entitys.warn.WarnItem;
 import ping.otmsapp.entitys.warn.WarnList;
 import ping.otmsapp.log.LLog;
-import ping.otmsapp.tools.JsonUti;
+import ping.otmsapp.tools.JsonUtil;
 import ping.otmsapp.tools.StrUtil;
 
 public class DispatchSyncHelper extends DispatchOperation{
@@ -124,7 +124,7 @@ public class DispatchSyncHelper extends DispatchOperation{
 
             if (isNotify) {
                 warnTag.save();
-                LLog.print(JsonUti.javaBeanToJson(warnTag));
+                LLog.print(JsonUtil.javaBeanToJson(warnTag));
                 if (callback!=null) callback.notifyWarn();
             }
 
@@ -329,7 +329,7 @@ public class DispatchSyncHelper extends DispatchOperation{
                 int i = server.addTrail(
                         vehicleInfo.carNumber,
                         vehicleInfo.driverCode,
-                        JsonUti.javaBeanToJson(trace.path),
+                        JsonUtil.javaBeanToJson(trace.path),
                         trace.path.size(),
                         2
                 );
@@ -358,7 +358,7 @@ public class DispatchSyncHelper extends DispatchOperation{
             int i = server.addTrail(
                     vehicleInfo.carNumber,
                     vehicleInfo.driverCode,
-                    JsonUti.javaBeanToJson(trace.path),
+                    JsonUtil.javaBeanToJson(trace.path),
                     trace.path.size(),
                     4
                     );
@@ -442,7 +442,7 @@ public class DispatchSyncHelper extends DispatchOperation{
             while (it.hasNext()){
                 temp = it.next();
                 recyclerBox = recyclerBoxList.list.get(index);
-//                LLog.print("同步回收箱: "+JsonUti.javaBeanToJson(recyclerBox));
+//                LLog.print("同步回收箱: "+JsonUtil.javaBeanToJson(recyclerBox));
                 if (recyclerBox.syncFlag != temp){
 
                         if (!recyclerBox.boxNo.equals("")){ //不是空箱号
