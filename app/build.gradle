@@ -16,7 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '28.0.3'
 }
 android {
     defaultConfig {
@@ -32,7 +32,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     //Kotlin支持
     implementation 'com.android.support:appcompat-v7:22.2.1'
-    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.google.code.gson:gson:2.8.5'
     //定位
     implementation 'com.amap.api:location:latest.integration'
     //地图
