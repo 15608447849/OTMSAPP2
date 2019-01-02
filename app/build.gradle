@@ -7,7 +7,7 @@ android {
         applicationId "ping.otmsapp"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 6
+        versionCode 7
         versionName "老百姓运输调度司机终端"
     }
     buildTypes {
@@ -23,8 +23,17 @@ android {
         ndk {
             //设置支持的SO库架构（开发者可以根据需要，选择一个或多个平台的so）
 //            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-            abiFilters "arm64-v8a"//"armeabi-v7a"//,
+//            abiFilters "arm64-v8a","armeabi-v7a"//,
+            abiFilters "armeabi-v7a"
         }
+    }
+}
+android {
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 }
 dependencies {

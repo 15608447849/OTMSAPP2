@@ -288,12 +288,12 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         val boxListStrArray = arrayOfNulls<CharSequence>(boxList!!.size)
         for (i in boxList.indices) {
             val box = boxList[i]
-            boxListStrArray[i] = box.barCode + " - - - - - - " + when(box.state){
-                Box.STATE.LOAD -> "等待装箱"
+            boxListStrArray[i] = when(box.state){
+                Box.STATE.LOAD -> "等待装载"
                 Box.STATE.UNLOAD -> "等待卸载"
                 Box.STATE.RECYCLE -> "等待回收"
                 else -> "异常状态"
-            }
+            } + " - - - - - \t" + box.barCode
         }
         DialogUtil.createSimpleListDialog(
                 this@DispatchActivity,
