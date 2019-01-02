@@ -2,7 +2,8 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/list_item_container1"
-    >
+    android:descendantFocusability="blocksDescendants">
+
     <RelativeLayout
         style="@style/list_item_container2">
 

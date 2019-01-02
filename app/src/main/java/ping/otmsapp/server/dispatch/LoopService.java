@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.Intent;
 
 import ping.otmsapp.R;
+import ping.otmsapp.entitys.IO;
 import ping.otmsapp.entitys.UserInfo;
 import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.map.GdMapLocation;
@@ -46,6 +47,7 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
 
     @Override
     public void onDestroy() {
+        billImageUpload.stopUploadLoop();
         location.destroy();
         super.onDestroy();
         android.os.Process.killProcess(android.os.Process.myPid());
@@ -77,10 +79,12 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
         }
     }
 
+
+
     @Override
     protected void executeTask() {
-        billImageUpload.billUpload();
       try{
+          billImageUpload.billUploadSync();
           UserInfo userInfo = new UserInfo().fetch();
           VehicleInfo vehicleInfo = new VehicleInfo().fetch();
 

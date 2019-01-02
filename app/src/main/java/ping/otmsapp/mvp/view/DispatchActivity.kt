@@ -26,6 +26,7 @@ import ping.otmsapp.entitys.dispatch.Box
 import ping.otmsapp.entitys.dispatch.Dispatch
 import ping.otmsapp.entitys.scanner.ScannerCallback
 import ping.otmsapp.entitys.upload.BillImage
+import ping.otmsapp.log.LLog
 import ping.otmsapp.mvp.basics.ViewBaseImp
 import ping.otmsapp.mvp.contract.DispatchContract
 import ping.otmsapp.mvp.contract.MenuContract
@@ -124,7 +125,6 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         lv_content.adapter = adapter
 
         lv_content.setOnItemClickListener { parent, view, position, id ->
-
             showDetailDialog(position)
 
         }

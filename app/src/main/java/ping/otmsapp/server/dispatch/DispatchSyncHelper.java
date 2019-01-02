@@ -62,7 +62,10 @@ public class DispatchSyncHelper extends DispatchOperation{
 
     //预警信息同步
     private void syncWarn(VehicleInfo vehicleInfo) {
-
+        Dispatch dispatch = new Dispatch().fetch();
+        if (dispatch.state < Dispatch.STATE.TAKEOUT || dispatch.state > Dispatch.STATE.BACK){
+            return;
+        }
         WarnList warnTag = new WarnList().fetch();
 
         if (warnTag==null) return;

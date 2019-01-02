@@ -10,10 +10,42 @@ import ping.otmsapp.entitys.upload.BillImageList;
 import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.model.FileUploadModel;
 
-public class ImageUpload {
+public class ImageUpload extends Thread{
+
+    private volatile boolean isStart = true;
+
+    public void stopUploadLoop(){
+        isStart = false;
+        billUploadSync();
+    }
+   public ImageUpload(){
+       start();
+   }
+
+    @Override
+    public void run() {
+        while (isStart) {
+            synchronized (this){
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            billUpload();
+        }
+    }
+
+    public void billUploadSync(){
+        synchronized (this){
+            this.notify();
+        }
+    }
+
     private FileUploadModel fileUploadModel = new FileUploadModel();
 
     private volatile boolean isRunning = false;
+
 
     public void billUpload(){
         try{
