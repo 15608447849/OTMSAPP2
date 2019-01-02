@@ -39,4 +39,6 @@ dependencies {
     implementation 'com.amap.api:3dmap:latest.integration'
     //线程调度无锁
     implementation 'com.lmax:disruptor:3.3.8'
+    //图片压缩
+    implementation 'top.zibin:Luban:1.1.8'
 }

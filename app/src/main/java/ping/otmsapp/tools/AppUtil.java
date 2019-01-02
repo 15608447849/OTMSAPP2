@@ -3,40 +3,33 @@ package ping.otmsapp.tools;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Looper;
-
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-import ping.otmsapp.log.LLog;
+import top.zibin.luban.Luban;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -242,6 +235,21 @@ public class AppUtil {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setDataAndType(Uri.parse("file://"+apkPath),"application/vnd.android.package-archive");
         context.startActivity(intent);
+    }
+
+
+    /**
+     * 图片压缩
+     */
+    public static void imageCompression(Context context,File image,int threshold){
+        try{
+             Luban.with(context)
+                    .load(image)
+                    .ignoreBy(threshold)
+                    .get(image.getCanonicalPath());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

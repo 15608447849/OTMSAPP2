@@ -38,7 +38,8 @@ public class ApplicationInitialization extends LeeApplicationAbs{
             }
         });
 
-        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "222.240.233.154", 4061);
+//        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "222.240.233.154", 4061);
+        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "192.168.1.120", 4061);
     }
 
 

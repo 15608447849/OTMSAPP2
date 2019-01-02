@@ -10,8 +10,10 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.RadioGroup
+import android.widget.TextView
 import kotlinx.android.synthetic.main.act_dispatch.*
 import kotlinx.android.synthetic.main.inc_dispatch_button.*
 import kotlinx.android.synthetic.main.inc_dispatch_tab.*
@@ -20,6 +22,7 @@ import ping.otmsapp.R
 import ping.otmsapp.adapter.DispatchListAdapter
 import ping.otmsapp.entitys.IO
 import ping.otmsapp.entitys.UserInfo
+import ping.otmsapp.entitys.dispatch.Box
 import ping.otmsapp.entitys.dispatch.Dispatch
 import ping.otmsapp.entitys.scanner.ScannerCallback
 import ping.otmsapp.entitys.upload.BillImage
@@ -28,7 +31,10 @@ import ping.otmsapp.mvp.contract.DispatchContract
 import ping.otmsapp.mvp.contract.MenuContract
 import ping.otmsapp.mvp.presenter.DispatchPresenter
 import ping.otmsapp.mvp.presenter.MenuPresenter
-import ping.otmsapp.tools.*
+import ping.otmsapp.tools.AppUtil
+import ping.otmsapp.tools.DialogUtil
+import ping.otmsapp.tools.MediaUse
+import ping.otmsapp.tools.StrUtil
 import java.io.File
 
 /**
@@ -114,8 +120,14 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
             }
 
         }
+
         lv_content.adapter = adapter
 
+        lv_content.setOnItemClickListener { parent, view, position, id ->
+
+            showDetailDialog(position)
+
+        }
         //默认选中
         rbtn_load.toggle()
 
@@ -153,6 +165,8 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         }
 
     }
+
+
 
     //上传回单
     private fun uploadReceipt(position: Int) {
@@ -196,6 +210,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
             }
         }
     }
+
     //图片选择回调
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
@@ -224,6 +239,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
             }
         }
     }
+
     //预览图片
     private fun previewPictures(bitmap: Bitmap) {
         runOnUiThread {
@@ -250,6 +266,8 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
                     if (it.id == upload.id){
                         //上传图片
                         IO.pool {
+                            //图片压缩
+                            AppUtil.imageCompression(this@DispatchActivity,tempFile,1024)
                             presenter.uploadBillImage(billImage)
                             tempFile = null
                             billImage = null
@@ -264,6 +282,26 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         }
     }
 
+    private fun showDetailDialog(position: Int) {
+        val store = adapter?.dispatch?.storeList!![position]
+        val boxList = store?.boxList
+        val boxListStrArray = arrayOfNulls<CharSequence>(boxList!!.size)
+        for (i in boxList.indices) {
+            val box = boxList[i]
+            boxListStrArray[i] = box.barCode + " - - - - - - " + when(box.state){
+                Box.STATE.LOAD -> "等待装箱"
+                Box.STATE.UNLOAD -> "等待卸载"
+                Box.STATE.RECYCLE -> "等待回收"
+                else -> "异常状态"
+            }
+        }
+        DialogUtil.createSimpleListDialog(
+                this@DispatchActivity,
+                store.detailedAddress,
+                boxListStrArray,
+                false
+                ){  dialog, which -> dialog.dismiss() }
+    }
 
     override fun onResume() {
         super.onResume()
