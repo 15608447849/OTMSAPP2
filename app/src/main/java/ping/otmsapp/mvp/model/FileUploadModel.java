@@ -30,7 +30,7 @@ public class FileUploadModel extends IceServerAbs<IFileUploadServicePrx> impleme
     public boolean uploadImage(File image, String serverFilePath, String serverFileName) {
 
         if (image.length()==0) return true;
-        printParam("上传文件",image,serverFileName,serverFileName,"文件大小:"+ image.length());
+        printParam("上传文件",image,"文件大小:"+ image.length());
         RandomAccessFile raf = null;
         try{
             final IFileUploadServicePrx prx = getProxy();
@@ -50,12 +50,10 @@ public class FileUploadModel extends IceServerAbs<IFileUploadServicePrx> impleme
             printParam("上传文件","已经获取分片信息,开始上传");
             long time = System.currentTimeMillis();
             while (pos < len){
+                size = (int)(len - pos);
 
-                if (len - pos >= bytes.length) {
-                    size = bytes.length;
-                }else{
-                    size = (int)(len - pos);
-                }
+                if (size > bytes.length) size = bytes.length;
+
                 //移动到起点
                 raf.seek(pos);
 
