@@ -8,6 +8,7 @@ import ping.otmsapp.iothread.IOThreadDisruptor;
 public class IO {
 
     private final static IOProxy pool = new IOProxy(new IOThreadPool());
+
     private final static IOProxy queue = new IOProxy(new IOThreadDisruptor());
 
     public static void pool(Runnable runnable){

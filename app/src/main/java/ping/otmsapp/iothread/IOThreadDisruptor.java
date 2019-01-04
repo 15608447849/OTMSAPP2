@@ -84,7 +84,7 @@ public class IOThreadDisruptor implements IOInterface{
 //        disruptor.handleEventsWith(new RunnableEventHandler());
 
 
-        disruptor.handleEventsWithWorkerPool(new RunnableEventHandler2(),new RunnableEventHandler2(),new RunnableEventHandler2());
+        disruptor.handleEventsWithWorkerPool(new RunnableEventHandler2());
 
 
         ringBuffer = disruptor.start();

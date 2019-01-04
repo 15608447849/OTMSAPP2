@@ -126,7 +126,6 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
 
         lv_content.setOnItemClickListener { parent, view, position, id ->
             showDetailDialog(position)
-
         }
         //默认选中
         rbtn_load.toggle()
@@ -283,22 +282,28 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
     }
 
     private fun showDetailDialog(position: Int) {
-        val store = adapter?.dispatch?.storeList!![position]
+        val dispatch = adapter?.dispatch
+
+        val store = dispatch!!.storeList!![position]
+
         val boxList = store?.boxList
-        val boxListStrArray = arrayOfNulls<CharSequence>(boxList!!.size)
-        for (i in boxList.indices) {
+        val list = arrayListOf<String>()
+        //等待装货箱号
+        for (i in boxList!!.indices) {
             val box = boxList[i]
-            boxListStrArray[i] = when(box.state){
-                Box.STATE.LOAD -> "等待装载"
-                Box.STATE.UNLOAD -> "等待卸载"
-                Box.STATE.RECYCLE -> "等待回收"
-                else -> "异常状态"
-            } + " - - - - - \t" + box.barCode
+            if (dispatch.state == Dispatch.STATE.LOAD && box.state == Box.STATE.LOAD){
+                list.add(box.barCode)
+            }else if (dispatch.state == Dispatch.STATE.UNLOAD && box.state == Box.STATE.UNLOAD){
+                list.add(box.barCode)
+            }
         }
+
+        val boxListStrArray = arrayOfNulls<CharSequence>(list.size)
+
         DialogUtil.createSimpleListDialog(
                 this@DispatchActivity,
                 store.detailedAddress,
-                boxListStrArray,
+                list.toArray(boxListStrArray),
                 false
                 ){  dialog, which -> dialog.dismiss() }
     }

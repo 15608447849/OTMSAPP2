@@ -2,9 +2,9 @@ package ping.otmsapp.server.dispatch;
 
 import android.app.Notification;
 import android.content.Intent;
+import android.util.Log;
 
 import ping.otmsapp.R;
-import ping.otmsapp.entitys.IO;
 import ping.otmsapp.entitys.UserInfo;
 import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.map.GdMapLocation;
@@ -21,7 +21,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class LoopService extends HearServer implements DispatchOperation.Callback {
 
-    private ImageUpload billImageUpload = new ImageUpload();
+    private BillImageUpload billImageUpload = new BillImageUpload();
     private DispatchSyncHelper dispatchSyncHelper = new DispatchSyncHelper();
     private DispatchPullHelper dispatchPullHelper = new DispatchPullHelper();
     private LocationHelper locationHelper = new LocationHelper();
@@ -47,7 +47,7 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
 
     @Override
     public void onDestroy() {
-        billImageUpload.stopUploadLoop();
+        billImageUpload.stopRun();
         location.destroy();
         super.onDestroy();
         android.os.Process.killProcess(android.os.Process.myPid());
@@ -84,7 +84,8 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
     @Override
     protected void executeTask() {
       try{
-          billImageUpload.billUploadSync();
+          billImageUpload.executeDispatch();
+          long time = System.currentTimeMillis();
           UserInfo userInfo = new UserInfo().fetch();
           VehicleInfo vehicleInfo = new VehicleInfo().fetch();
 
@@ -99,7 +100,7 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
           dispatchSyncHelper.sync(userInfo,vehicleInfo);
           dispatchPullHelper.pull(userInfo,vehicleInfo);
           dispatchNotifyView.refreshView(userInfo,vehicleInfo,getNextTime());
-
+//          Log.d("TMS","本轮结束耗时:"+ (System.currentTimeMillis() - time));
       }catch (Exception e){
           e.printStackTrace();
       }

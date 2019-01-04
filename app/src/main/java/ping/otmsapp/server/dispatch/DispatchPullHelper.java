@@ -146,7 +146,7 @@ public class DispatchPullHelper extends DispatchOperation {
         //保存
         saveToSQLite(vehicleInfo,dispatch,dispatchSync,trace,traceSync,abnormalList,abnormalListSync,recyclerBoxList,recyclerBoxListSync,warnList);
 
-        LLog.print("调度信息:\n"+ JsonUtil.javaBeanToJson(dispatch));
+        //LLog.print("调度信息:\n"+ JsonUtil.javaBeanToJson(dispatch));
         if (callback!=null) callback.updateDispatch();
     }
 

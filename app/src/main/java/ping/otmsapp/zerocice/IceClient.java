@@ -87,7 +87,7 @@ public final class IceClient extends Thread implements Closeable{
                     String.format(
                             Locale.getDefault(),
                             "--Ice.Default.Locator=%s/Locator:tcp -h %s -p %d", serverName,host, port),
-                    "--Ice.MessageSizeMax=4096"
+                    "--Ice.MessageSizeMax=40960"
             };
     };
 

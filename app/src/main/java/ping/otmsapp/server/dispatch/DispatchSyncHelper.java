@@ -1,5 +1,7 @@
 package ping.otmsapp.server.dispatch;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,6 +11,7 @@ import java.util.ListIterator;
 import cn.hy.otms.rpcproxy.appInterface.WarnsDetailInfo;
 import cn.hy.otms.rpcproxy.appInterface.WarnsInfo;
 import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
+import ping.otmsapp.entitys.IO;
 import ping.otmsapp.entitys.UserInfo;
 import ping.otmsapp.entitys.dispatch.Box;
 import ping.otmsapp.entitys.dispatch.Dispatch;
@@ -34,43 +37,67 @@ public class DispatchSyncHelper extends DispatchOperation{
     private  int remoteState;
     private int localState;
     private BoolMessage boolMessage;
+    //预警访问网络中
+    private volatile boolean isWarning;
 
     //检测ice后台返回的对象有效性
     private boolean checkBoolMessage() throws IllegalStateException {
         return boolMessage != null && boolMessage.flag;
     }
 
-
-    public void sync(UserInfo userInfo, VehicleInfo vehicleInfo){
+    public void sync(UserInfo userInfo, final VehicleInfo vehicleInfo){
         if (userInfo == null || vehicleInfo == null) return;
 
         try {
-            //预警信息同步
-            syncWarn(vehicleInfo);
+
+            //轨迹同步
+            syncTraceRecode(vehicleInfo);
             //异常信息同步
             syncAbnormal();
             //回收信息同步
             syncRecycle();
-            //轨迹同步
-            syncTraceRecode(vehicleInfo);
             //调度信息同步
             executeDispatchSync(vehicleInfo);
+
+            IO.queue(new Runnable() {
+                @Override
+                public void run() {
+                    if (isWarning) return;
+                    isWarning = true;
+                    //预警信息同步
+                    syncWarn(vehicleInfo);
+                    isWarning = false;
+                }
+            });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
+
     //预警信息同步
     private void syncWarn(VehicleInfo vehicleInfo) {
+
         Dispatch dispatch = new Dispatch().fetch();
-        if (dispatch.state < Dispatch.STATE.TAKEOUT || dispatch.state > Dispatch.STATE.BACK){
+
+        if(dispatch == null) return;
+
+        if (dispatch.state <= Dispatch.STATE.TAKEOUT || dispatch.state >= Dispatch.STATE.BACK){
             return;
         }
         WarnList warnTag = new WarnList().fetch();
 
         if (warnTag==null) return;
 
+//        Log.d("TMS","预警开始访问接口");
         WarnsInfo warnsInfo = server.queryTimeLaterWarnInfoByDriver(vehicleInfo.carNumber,warnTag.timeStamp);
+//        Log.d("TMS","预警结束访问接口");
+
+        warnTag = warnTag.fetch(); //再次判断避免当前已不存在预警
+
+        if (warnTag==null) return;
 
         if (warnsInfo==null || warnsInfo.pendingWarnsNum == 0) return;
 
@@ -130,8 +157,9 @@ public class DispatchSyncHelper extends DispatchOperation{
                 LLog.print(JsonUtil.javaBeanToJson(warnTag));
                 if (callback!=null) callback.notifyWarn();
             }
-
-        };
+//            Log.d("TMS","预警本地处理结束");
+        try { Thread.sleep( 30 * 1000 );  } catch (InterruptedException ignored) { }
+    };
 
     //执行调度单同步
     private void executeDispatchSync(VehicleInfo vehicleInfo) {
