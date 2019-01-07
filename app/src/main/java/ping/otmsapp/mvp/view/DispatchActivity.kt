@@ -281,6 +281,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         }
     }
 
+    //显示箱号详情并选中
     private fun showDetailDialog(position: Int) {
         val dispatch = adapter?.dispatch
 
@@ -304,8 +305,13 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
                 this@DispatchActivity,
                 store.detailedAddress,
                 list.toArray(boxListStrArray),
-                false
-                ){  dialog, which -> dialog.dismiss() }
+                true
+                ){  dialog, which ->
+            DialogUtil.dialogSimple2(this@DispatchActivity,
+                    "手动操作扫描箱号: "+ list[which],
+                    "确定"
+            ) { IO.pool { onScanner(list[which]) } }
+        }
     }
 
     override fun onResume() {
