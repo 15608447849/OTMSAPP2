@@ -62,4 +62,15 @@ public class MTraceLocation {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", speed=" + speed +
+                ", bearing=" + bearing +
+                ", time=" + time +
+                '}';
+    }
 }

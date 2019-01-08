@@ -14,6 +14,7 @@
 
         <!--高德地图-->
         <meta-data android:name="com.amap.api.v2.apikey" android:value="c82fc27ba90c4b075e9d2c4503e8afa4"/>
+
         <!--高德地图定位服务 -->
         <service android:name="com.amap.api.location.APSService" android:process=":location"/>
         <!--轮询服务 -->

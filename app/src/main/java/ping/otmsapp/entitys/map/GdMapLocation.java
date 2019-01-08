@@ -25,7 +25,7 @@ public class GdMapLocation {
         AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
 //            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Device_Sensors);//定位模式,gps
             mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//定位模式,gps
-            mLocationOption.setInterval(1000);//间隔
+            mLocationOption.setInterval(30000);//间隔
             mLocationOption.setSensorEnable(false);//不使用手机传感器定位角度
             mLocationOption.setLocationCacheEnable(false);//不使用定位缓存
             mLocationOption.setNeedAddress(false);//不用返回地理信息

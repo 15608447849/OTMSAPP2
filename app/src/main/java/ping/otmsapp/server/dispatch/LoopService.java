@@ -2,7 +2,6 @@ package ping.otmsapp.server.dispatch;
 
 import android.app.Notification;
 import android.content.Intent;
-import android.util.Log;
 
 import ping.otmsapp.R;
 import ping.otmsapp.entitys.UserInfo;
@@ -79,13 +78,11 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
         }
     }
 
-
-
     @Override
     protected void executeTask() {
       try{
           billImageUpload.executeDispatch();
-          long time = System.currentTimeMillis();
+//          long time = System.currentTimeMillis();
           UserInfo userInfo = new UserInfo().fetch();
           VehicleInfo vehicleInfo = new VehicleInfo().fetch();
 
@@ -95,7 +92,7 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
               if (location.isStart()) location.stopLocation();
           }
 
-          if (location.isStart()) checkGps();
+          //if (location.isStart()) checkGps();//是否检测GPS开启
 
           dispatchSyncHelper.sync(userInfo,vehicleInfo);
           dispatchPullHelper.pull(userInfo,vehicleInfo);

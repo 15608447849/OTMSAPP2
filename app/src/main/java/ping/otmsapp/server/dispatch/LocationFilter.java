@@ -52,12 +52,12 @@ public class LocationFilter {
     public Tuple2<MTraceLocation,Float> convert(AMapLocation aMapLocation) throws Exception {
         curtLoc = aMapLocation;
         //如果当前 类型不符,精度过大,卫星数过低 不记录
-        if ( curtLoc.getLocationType() != AMapLocation.LOCATION_TYPE_GPS //类型不符
-                || curtLoc.getAccuracy() > 50 //精度过大
-                || (curtLoc.getBearing() == 0 && curtLoc.getSpeed() == 0) //不存在角度偏移 且静止
-                || curtLoc.getSatellites() < 4){ //卫星数过低
-            return null;
-        }
+//        if ( curtLoc.getLocationType() != AMapLocation.LOCATION_TYPE_GPS //类型不符
+//                || curtLoc.getAccuracy() > 50 //精度过大
+//                || (curtLoc.getBearing() == 0 && curtLoc.getSpeed() == 0) //不存在角度偏移 且静止
+//                || curtLoc.getSatellites() < 4){ //卫星数过低
+//            return null;
+//        }
 
         if (prevLoc == null) {
             prevLoc = curtLoc;
@@ -77,7 +77,7 @@ public class LocationFilter {
                     curtLoc.getBearing(),//角度
                     curtLoc.getTime());
             prevLoc = curtLoc;
-
+            LLog.print("记录轨迹点"+mTraceLocation.toString());
             return new Tuple2<>(mTraceLocation, cDistance);
         }
         return null;
