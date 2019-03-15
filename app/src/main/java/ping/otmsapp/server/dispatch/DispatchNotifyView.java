@@ -26,8 +26,11 @@ public class DispatchNotifyView {
                 remoteViews.setTextViewText(R.id.tv_notify_content, "等待调度任务,下次获取时间: "+ TimeUtil.formatUTC(nextTime,"HH:mm:ss"));
             }
         }else{
-            remoteViews.setTextViewText(R.id.tv_notify_content, "请登录运输系统");
+            remoteViews.setTextViewText(R.id.tv_notify_content, "请登录应用");
         }
     }
 
+    public void refreshView(String text) {
+        remoteViews.setTextViewText(R.id.tv_notify_content, text);
+    }
 }

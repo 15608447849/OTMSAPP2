@@ -19,7 +19,7 @@ public class CostContract {
         //操作费用账单
         boolean optionCostBill(int userId,long train,int opCode);
         //上传图片
-        boolean uploadImage(File image,String serverFilePath,String serverFileName);
+        boolean uploadFile(File image, String serverFilePath, String serverFileName);
     }
 
     public interface View extends IView {

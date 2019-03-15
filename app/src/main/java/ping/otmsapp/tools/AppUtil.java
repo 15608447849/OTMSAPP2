@@ -78,7 +78,7 @@ public class AppUtil {
             try {
                 return cm.getActiveNetworkInfo().isAvailable();
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
         return false;

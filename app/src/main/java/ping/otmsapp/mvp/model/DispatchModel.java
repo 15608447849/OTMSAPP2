@@ -8,10 +8,11 @@ import ping.otmsapp.entitys.dispatch.Store;
 import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.except.Abnormal;
 import ping.otmsapp.entitys.except.AbnormalList;
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.contract.DispatchContract;
 
 public class DispatchModel implements DispatchContract.model{
+
+    private boolean isCancel; //装货时 是否在进行取消操作
 
     private DispatchContract.model.Callback callback;
 
@@ -145,7 +146,7 @@ public class DispatchModel implements DispatchContract.model{
         for (Box box : store.boxList) {
             if (box.barCode.equals(codeBar) ) {
                 int state = box.state;
-                if (state == Box.STATE.LOAD) {//等待装货
+                if (state == Box.STATE.LOAD && !isCancel) {//等待装货
                     //箱子改为卸货状态的时间
                     box.changeToUnloadStateTime = System.currentTimeMillis();
                     //箱子 转为卸货状态
@@ -161,28 +162,31 @@ public class DispatchModel implements DispatchContract.model{
                     //检测调度单是否进入等待启程状态
                     checkDispatchIsToTakeoutState(dispatch);
                 } else if (state == Box.STATE.UNLOAD){//等待卸货
-                    //箱子改为卸货状态的时间
-                    box.changeToUnloadStateTime = 0;
-                    //箱子 转为装货状态
-                    box.state = Box.STATE.LOAD;
-                    //改变当前门店已扫码数-1
-                    curStoreBoxIndex--;
-                    store.loadScanIndex =curStoreBoxIndex;
-                    //改变调度单总扫码数-1
-                    curPos--;
-                    dispatch.loadScanBoxIndex = curPos;
-                    //检测门店是否返回装货状态
-                    checkStoreIsToLoadState(store);
-                    //检测调度单是否返回装货状态
-                    checkDispatchIsToLoadState(dispatch);
-                    //检测是否存在可以处理的异常
-                    checkUnloadScanException(dispatch,store,box);
 
+                    if (isCancel){
+                        //箱子改为卸货状态的时间
+                        box.changeToUnloadStateTime = 0;
+                        //箱子 转为装货状态
+                        box.state = Box.STATE.LOAD;
+                        //改变当前门店已扫码数-1
+                        curStoreBoxIndex--;
+                        store.loadScanIndex =curStoreBoxIndex;
+                        //改变调度单总扫码数-1
+                        curPos--;
+                        dispatch.loadScanBoxIndex = curPos;
+                        //检测门店是否返回装货状态
+                        checkStoreIsToLoadState(store);
+                        //检测调度单是否返回装货状态
+                        checkDispatchIsToLoadState(dispatch);
+                        //检测是否存在可以处理的异常
+                        checkUnloadScanException(dispatch,store,box);
+                    }else{
+                        if (callback!=null) callback.onScanLoadRepeat(box);
+                    }
                 }
                 if (callback!=null) callback.onScanBoxSuccess(box);
                 return true;
             }
-
         }
         if (callback!=null) callback.onScanFail(codeBar);
         return false;
@@ -233,7 +237,6 @@ public class DispatchModel implements DispatchContract.model{
     public void generateUnloadScanException(String codeBar, Dispatch dispatch, Store store) {
         AbnormalList abnormalList = new AbnormalList().fetch();
         if (abnormalList==null) return;
-        LLog.print("记录异常: "+ codeBar);
         Iterator<Abnormal> iterator = abnormalList.list.iterator();
         Abnormal abnormal;
         while (iterator.hasNext()){
@@ -265,7 +268,6 @@ public class DispatchModel implements DispatchContract.model{
     public void checkUnloadScanException(Dispatch dispatch, Store store, Box box) {
         AbnormalList abnormalList = new AbnormalList().fetch();
         if (abnormalList==null) return;
-        LLog.print("修复异常: "+ box.barCode);
         for (Abnormal abnormal : abnormalList.list){
             if (abnormal.abnormalBoxNumber.equals(box.barCode) && abnormal.abnormalType == 1){
                 //已存在的扫码错误-添加处理信息
@@ -304,5 +306,10 @@ public class DispatchModel implements DispatchContract.model{
         checkStoreIsToCompleteState(store);
         //检测调度单是否进入等待回程状态
         checkDispatchIsToBackState(dispatch);
+    }
+
+    @Override
+    public void setLoadCancel(boolean isChecked) {
+        isCancel = isChecked;
     }
 }

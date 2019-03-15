@@ -1,6 +1,5 @@
 package ping.otmsapp.server.dispatch;
 
-import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.map.MTraceLocation;
 import ping.otmsapp.entitys.map.Trace;
 import ping.otmsapp.entitys.tuples.Tuple2;

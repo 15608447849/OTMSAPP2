@@ -25,10 +25,14 @@ public class MenuContract {
         void createShortCut();
         //设置服务器信息
         void clearDispatch();
+        //上传日志
+        void uploadLog();
         //登出
         void logout();
         //退出
         void exit();
+
+
     }
 
 }

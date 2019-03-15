@@ -7,10 +7,10 @@ import android.text.InputFilter
 import android.text.InputType
 import android.view.ViewGroup
 import android.widget.EditText
-import ping.otmsapp.R
 import kotlinx.android.synthetic.main.act_recycle.*
 import kotlinx.android.synthetic.main.inc_back_title.*
 import kotlinx.android.synthetic.main.inc_input_code.*
+import ping.otmsapp.R
 import ping.otmsapp.adapter.RecycleListAdapter
 import ping.otmsapp.entitys.IO
 import ping.otmsapp.entitys.action.ClickManager
@@ -21,6 +21,7 @@ import ping.otmsapp.mvp.contract.RecycleContract
 import ping.otmsapp.mvp.presenter.RecyclePresenter
 import ping.otmsapp.tools.AppUtil
 import ping.otmsapp.tools.DialogUtil
+import ping.otmsapp.tools.MediaUse
 import ping.otmsapp.tools.StrUtil
 
 
@@ -28,6 +29,7 @@ class RecycleActivity: ViewBaseImp<RecyclePresenter>(), RecycleContract.View, Sc
 
     private var adapter: RecycleListAdapter? = null
     private val click = ClickManager()
+    private var mediaUse: MediaUse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,13 +55,15 @@ class RecycleActivity: ViewBaseImp<RecyclePresenter>(), RecycleContract.View, Sc
                 builder.setView(editText)
                 builder.setPositiveButton("添加") { dialog, which ->
                     dialog.dismiss()
-                    try {
-                        val number = Integer.parseInt(editText.text.toString())
-                        presenter.addCartonNumber(number,type);
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        toast("添加失败")
-                    }
+                        IO.pool {
+                            try {
+                                val number = Integer.parseInt(editText.text.toString())
+                                presenter.addCartonNumber(number,type);
+                            } catch (e: Exception) {
+                                toast("添加失败")
+                            }
+                        }
+
                 }
                 builder.create().show()
             }else{
@@ -83,12 +87,19 @@ class RecycleActivity: ViewBaseImp<RecyclePresenter>(), RecycleContract.View, Sc
             startActivity(Intent(this,DispatchActivity::class.java))
             finish()
         }
+
+        mediaUse = MediaUse(this)
     }
 
     override fun onResume() {
         super.onResume()
         presenter.setCurrentStoreIndex(intent.getIntExtra("index",-1))
         presenter.updateData();
+    }
+
+    override fun onDestroy() {
+        mediaUse?.destroy()
+        super.onDestroy()
     }
 
     override fun updateStoreName(storeName: String?) {
@@ -130,8 +141,10 @@ class RecycleActivity: ViewBaseImp<RecyclePresenter>(), RecycleContract.View, Sc
 
     override fun onScanner(codeBar: String?) {
         IO.pool{
+            mediaUse?.play(R.raw.recycle)
             val type = getSelectType()
-            presenter.scanHandle(codeBar,type);
+            presenter.scanHandle(codeBar,type)
+
         }
     }
 

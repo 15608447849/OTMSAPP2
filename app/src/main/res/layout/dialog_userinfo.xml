@@ -89,17 +89,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="手机:"
+            android:text="角色:"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#3333"
             android:layout_marginRight="@dimen/dp24"
             />
         <TextView
-            android:id="@+id/tv_user_phone"
+            android:id="@+id/tv_user_role"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="15608447849"
+            android:text="调度员"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#303"

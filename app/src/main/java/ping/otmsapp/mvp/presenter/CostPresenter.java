@@ -10,11 +10,9 @@ import java.util.List;
 import cn.hy.otms.rpcproxy.appInterface.SureFeeInfo;
 import ping.otmsapp.entitys.UserInfo;
 import ping.otmsapp.entitys.cost.FeeDetail;
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.basics.PresenterViewBind;
 import ping.otmsapp.mvp.contract.CostContract;
 import ping.otmsapp.mvp.model.FileUploadModel;
-import ping.otmsapp.tools.JsonUtil;
 import ping.otmsapp.tools.StrUtil;
 
 public class CostPresenter  extends PresenterViewBind<CostContract.View> implements CostContract.Presenter {
@@ -38,7 +36,6 @@ public class CostPresenter  extends PresenterViewBind<CostContract.View> impleme
             else sb.append(day);
 
             SureFeeInfo[] arr = model.getCostBill(userInfo.id,sb.toString());
-            LLog.print(JsonUtil.javaBeanToJson(arr));
             //转换数据
             List<FeeDetail> list = new ArrayList<>();
             if (arr!=null && arr.length>0){
@@ -131,7 +128,7 @@ public class CostPresenter  extends PresenterViewBind<CostContract.View> impleme
         }
         view.showProgressBar();
         try {
-            boolean flag = model.uploadImage(image,"/sched/img/",image.getName());
+            boolean flag = model.uploadFile(image,"/sched/img/",image.getName());
             if (flag){
                 view.toast("上传成功");
             }else{

@@ -1,5 +1,4 @@
 <resources>
-
     <!-- title 颜色大小 -->
     <style name="title_size_color">
         <item name="android:layout_width">match_parent</item>

@@ -52,7 +52,6 @@ public class LocationHelper extends Thread implements AMapLocationListener {
         try {
             Tuple2<MTraceLocation,Float> tuple = locationFilter.convert(aMapLocation);
             if (tuple!=null){
-//                LLog.print(tuple.getValue0());
                 //保存
                 locationRecode.recode(tuple);
             }

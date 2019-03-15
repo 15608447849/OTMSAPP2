@@ -7,7 +7,7 @@ import ping.otmsapp.entitys.dispatch.Dispatch;
 import ping.otmsapp.entitys.dispatch.Store;
 import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.except.AbnormalList;
-import ping.otmsapp.entitys.upload.BillImage;
+import ping.otmsapp.entitys.upload.FileUploadItem;
 import ping.otmsapp.mvp.basics.IPresenter;
 import ping.otmsapp.mvp.basics.IView;
 
@@ -38,6 +38,9 @@ public class DispatchContract {
         void checkUnloadScanException(Dispatch dispatch, Store store, Box box);
         //卸货异常签收-货差异常
         void unloadAbnormal(Dispatch dispatch, Store store, Box box, AbnormalList abnormalList,VehicleInfo vehicleInfo);
+        //是否进行装货取消操作
+        void setLoadCancel(boolean flag);
+
 
         interface Callback{
             //通知门店状态已改变
@@ -48,6 +51,8 @@ public class DispatchContract {
             void onScanBoxSuccess(Box box);
             //扫码失败
             void onScanFail(String codeBar);
+            //装载-重复扫码
+            void onScanLoadRepeat(Box box);
             //卸载-重复扫码
             void onScanUnloadRepeat(Box box);
         }
@@ -66,8 +71,6 @@ public class DispatchContract {
     }
 
     public interface Presenter extends IPresenter<DispatchContract.View>{
-
-
 
         interface Callback{
             void onCallback();
@@ -89,10 +92,12 @@ public class DispatchContract {
         void loadALL();
         //卸货提交货差
         void unloadAbnormal(int index);
-
+        //卸货异常确认
         void unloadAbnormalSure(int index);
         //上传门店签收单据
-        void uploadBillImage(@Nullable BillImage billImage);
+        void uploadBillImage(@Nullable FileUploadItem billImage);
+        //设置装货时是否进行取消操作
+        void setLoadCache(boolean checked);
     }
 
 }

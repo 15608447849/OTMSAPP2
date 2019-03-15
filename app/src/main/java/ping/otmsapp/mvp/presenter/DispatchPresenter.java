@@ -3,7 +3,6 @@ package ping.otmsapp.mvp.presenter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import ping.otmsapp.entitys.dispatch.Box;
 import ping.otmsapp.entitys.dispatch.Dispatch;
@@ -11,13 +10,16 @@ import ping.otmsapp.entitys.dispatch.Store;
 import ping.otmsapp.entitys.dispatch.VehicleInfo;
 import ping.otmsapp.entitys.except.AbnormalList;
 import ping.otmsapp.entitys.map.Trace;
+import ping.otmsapp.entitys.recycler.RecyclerBoxList;
+import ping.otmsapp.entitys.recycler.RecyclerBoxListSync;
 import ping.otmsapp.entitys.tuples.Tuple2;
-import ping.otmsapp.entitys.upload.BillImage;
-import ping.otmsapp.entitys.upload.BillImageList;
+import ping.otmsapp.entitys.upload.FileUploadItem;
+import ping.otmsapp.entitys.upload.FileUploadItemList;
 import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.basics.PresenterViewBind;
 import ping.otmsapp.mvp.contract.DispatchContract;
 import ping.otmsapp.mvp.model.DispatchModel;
+import ping.otmsapp.tools.JsonUtil;
 
 public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> implements DispatchContract.Presenter {
 
@@ -51,9 +53,17 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         }
 
         @Override
+        public void onScanLoadRepeat(Box box) {
+            if (isBindView()) {
+                view.toast("箱号:"+box.barCode+"\n装货时重复扫码");
+                view.playScanFailMusic();
+            }
+        }
+
+        @Override
         public void onScanUnloadRepeat(Box box) {
             if (isBindView()) {
-                view.toast("箱号:"+box.barCode+"\n重复扫码");
+                view.toast("箱号:"+box.barCode+"\n卸货时重复扫码");
                 view.playScanFailMusic();
             }
         }
@@ -75,9 +85,7 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
 
     @Override
     public void codeBarHandle(String codeBar,int allowDispatchState , int selectIndex) {
-
-        LLog.print("二维码: "+codeBar+" ,当前选择的状态: "+ allowDispatchState+" ,当前选择的下标:"+selectIndex);
-
+        LLog.print("处理二维码: " + codeBar,"操作类型: "+allowDispatchState);
         if (!isBindView()) return;
 
         if (allowDispatchState==-1)  return;
@@ -126,12 +134,14 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
 
     @Override
     public void take() {
+
         Dispatch dispatch = new Dispatch().fetch();
         if (dispatch==null){
             view.toast("暂无调度任务");
             return;
         }
         if (dispatch.state == Dispatch.STATE.TAKEOUT){
+            LLog.print("点击启程");
             view.dialog("准备出发", "确定将记录您的行驶轨迹,请确保开启GPS定位", new Callback() {
                 @Override
                 public void onCallback() {
@@ -167,6 +177,12 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
             return;
         }
         if (dispatch.state == Dispatch.STATE.BACK){
+            LLog.print("点击返程");
+            //判断是否存在回收箱需要同步
+            if (!checkRecycleBox()) {
+                view.toast("终端后台正在同步回收箱信息,请稍后再试");
+                return;
+            }
             view.dialog("返回仓库", "注意:请确认已上传回单\n如果您已成功返回仓库,将结束行程记录", new Callback() {
                 @Override
                 public void onCallback() {
@@ -176,6 +192,22 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         }else{
             view.toast("操作失败\n请先卸货完成在进行操作");
         }
+    }
+
+    //检测是否存在未同步的回收箱
+    private boolean checkRecycleBox() {
+        RecyclerBoxList recyclerBoxList = new RecyclerBoxList().fetch();
+        RecyclerBoxListSync recyclerBoxListSync = new RecyclerBoxListSync().fetch();
+        if (recyclerBoxList!=null && recyclerBoxListSync!=null && recyclerBoxList.list!=null && recyclerBoxListSync.list!=null && recyclerBoxList.list.size() == recyclerBoxListSync.list.size()){
+            int size = recyclerBoxList.list.size();
+            for (int i = 0 ; i < size ; i++){
+                if (recyclerBoxList.list.get(i).syncFlag!=recyclerBoxListSync.list.get(i)){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -190,7 +222,6 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
         view.resetListIndex();
         view.updateDispatch();
         view.toast("您辛苦了,调度单将自动完成数据同步");
-
     }
 
     @Override
@@ -279,18 +310,26 @@ public class DispatchPresenter extends PresenterViewBind<DispatchContract.View> 
     }
 
     @Override
-    public void uploadBillImage(@Nullable BillImage billImage) {
+    public void uploadBillImage(@Nullable FileUploadItem billImage) {
+        LLog.print("上传回单: "+ JsonUtil.javaBeanToJson(billImage));
         VehicleInfo vehicleInfo = new VehicleInfo().fetch();
         if (vehicleInfo==null) return;
         assert billImage != null;
+        //车次号
+        billImage.param.put("dispatchId",String.valueOf(vehicleInfo.carNumber));
+        //远程路径
+        billImage.serverPath = "/sched/img/" + vehicleInfo.carNumber + "/";
 
-        billImage.dispatchId = String.valueOf(vehicleInfo.carNumber);
-
-        BillImageList list = new BillImageList().fetch();
-        if (list == null) list = new BillImageList();
+        FileUploadItemList list = new FileUploadItemList().fetch();
+        if (list == null) list = new FileUploadItemList();
         list.list.add(billImage);
         list.save();
         if (isBindView()) view.toast("门店单据已提交,稍后将自动上传");
+    }
+
+    @Override
+    public void setLoadCache(boolean checked) {
+        model.setLoadCancel(checked);
     }
 
 

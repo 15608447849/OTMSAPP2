@@ -1,8 +1,10 @@
 package ping.otmsapp.log;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
@@ -21,16 +23,18 @@ public class LogFileHandler {
             ArrayList<File> delFile = new ArrayList<>();
             long time;
             for (File file : files){
-                time = System.currentTimeMillis()/1000 - file.lastModified();
-                if (time > build.storageDays*24*60*60){
+                time = System.currentTimeMillis() - file.lastModified(); //当前时间 - 最后修改时间
+                if (time > build.storageDays * 24 * 60 * 60 * 1000L){
                     delFile.add(file);
                 }
             }
             //删除文件
             for (File file : delFile){
-                file.delete();
+                boolean flag =  file.delete();
+                LLog.print("删除日志文件: " + file.getName() +"  - "+ flag);
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -42,17 +46,20 @@ public class LogFileHandler {
             folder.mkdirs();
         }
         File file = getLogFile(folder,build.logFileName,build.logFileSizeLimit,0);
-
-        FileWriter fileWriter = null;
+        if (!file.exists()) {
+            boolean cSuccess = file.createNewFile();
+            if (!cSuccess) throw new FileNotFoundException(file.toString());
+        }
+        OutputStreamWriter out = null;
         try {
-            fileWriter = new FileWriter(file, true);
-            fileWriter.append(msg);
-            fileWriter.append("\n");
-            fileWriter.flush();
-        } catch (IOException ignored) {
+            out = new OutputStreamWriter( new FileOutputStream(file,true), "UTF-8");
+            out.write(msg+"\n");
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }finally {
-            if(fileWriter!=null){
-                try {fileWriter.close();} catch (IOException ignored) {}
+            if(out!=null){
+                try {out.close();} catch (IOException ignored) {}
             }
         }
 

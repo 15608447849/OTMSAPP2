@@ -6,6 +6,8 @@ import android.util.Log;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Leeping on 2018/8/20.
@@ -16,7 +18,7 @@ public class Build {
     boolean isWriteConsole = true;//输出控制台
     boolean isWriteFile = false;//写入文件
     boolean isWriteThreadInfo = false; //打印线程信息
-    int logFileSizeLimit = 100 * 1024; //500kb
+    int logFileSizeLimit = 100 * 1024 * 1024; //1M
     SimpleDateFormat dateFormat = new SimpleDateFormat("[yyy-MM-dd HH:mm:ss]", Locale.CHINA);
     String logFolderPath = Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separatorChar + "AppLogger";
     String logFileName = "console";
@@ -27,6 +29,12 @@ public class Build {
     int storageDays = 7; //默认一个星期
 
     Build(){}
+
+    private void checkFileName() {
+        Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
+        Matcher matcher = pattern.matcher(this.logFileName);
+        this.logFileName = matcher.replaceAll("_");
+    }
 
     public Build setWriteConsole(boolean writeConsole) {
         isWriteConsole = writeConsole;
@@ -55,6 +63,8 @@ public class Build {
 
     public Build setLogFileName(String logFileName) {
         this.logFileName = logFileName;
+        //合法性效验
+        checkFileName();
         return this;
     }
 
@@ -88,5 +98,9 @@ public class Build {
     public Build setStorageDays(int storageDays) {
         this.storageDays = storageDays;
         return this;
+    }
+
+    public String getLogFolderPath(){
+        return this.logFolderPath ;
     }
 }

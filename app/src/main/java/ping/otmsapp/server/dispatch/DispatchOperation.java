@@ -11,6 +11,7 @@ import ping.otmsapp.entitys.map.TraceSync;
 import ping.otmsapp.entitys.recycler.RecyclerBoxList;
 import ping.otmsapp.entitys.recycler.RecyclerBoxListSync;
 import ping.otmsapp.entitys.warn.WarnList;
+import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.model.AppInterfaceModel;
 
 public class DispatchOperation{
@@ -56,6 +57,8 @@ public class DispatchOperation{
 
         //清理司机
         new VehicleInfo().remove();
+
+        LLog.print("已清理本地调度数据");
     }
 
 }

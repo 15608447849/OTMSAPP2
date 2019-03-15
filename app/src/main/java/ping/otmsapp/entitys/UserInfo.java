@@ -10,12 +10,16 @@ public class UserInfo extends JsonLocalSqlStorage{
      */
     public String name;
     /**
-     * 手机号码
-     */
-    public String phone;
-    /**
      * 公司名
      */
     public String compName;
+    /**
+     * 角色名
+     */
+    public String roleName;
+    /**
+     * 角色码
+     */
+    public long roleCode;
 
 }

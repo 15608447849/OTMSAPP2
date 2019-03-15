@@ -103,7 +103,7 @@ public class DispatchPullHelper extends DispatchOperation {
                 boxTemp = new Box();
                 boxTemp.state = Box.STATE.LOAD+dispatchOrder.ostatus;//30 带装箱扫码 31 待卸货扫码 32回收 <-> 服务器: 0 没有, 1装 2 卸
                 boxTemp.barCode = dispatchOrder.lpn; //二维码识别
-//                LLog.print(boxTemp.barCode);
+
                 boxRemoteStateMap.put(boxTemp.barCode, boxTemp.state);//箱子远程状态同步状态
                 boxList.add(boxTemp);
                 pos++;
@@ -145,8 +145,7 @@ public class DispatchPullHelper extends DispatchOperation {
 
         //保存
         saveToSQLite(vehicleInfo,dispatch,dispatchSync,trace,traceSync,abnormalList,abnormalListSync,recyclerBoxList,recyclerBoxListSync,warnList);
-
-        //LLog.print("调度信息:\n"+ JsonUtil.javaBeanToJson(dispatch));
+        LLog.print("调度信息:\n"+ JsonUtil.javaBeanToJson(dispatch));
         if (callback!=null) callback.updateDispatch();
     }
 

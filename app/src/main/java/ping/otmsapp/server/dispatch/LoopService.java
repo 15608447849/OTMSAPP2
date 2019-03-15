@@ -20,7 +20,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class LoopService extends HearServer implements DispatchOperation.Callback {
 
-    private BillImageUpload billImageUpload = new BillImageUpload();
+    private FileUploader fileUploader = new FileUploader();
     private DispatchSyncHelper dispatchSyncHelper = new DispatchSyncHelper();
     private DispatchPullHelper dispatchPullHelper = new DispatchPullHelper();
     private LocationHelper locationHelper = new LocationHelper();
@@ -46,7 +46,7 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
 
     @Override
     public void onDestroy() {
-        billImageUpload.stopRun();
+        fileUploader.stopRun();
         location.destroy();
         super.onDestroy();
         android.os.Process.killProcess(android.os.Process.myPid());
@@ -78,11 +78,19 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
         }
     }
 
+    private boolean checkNetwork() {
+        return AppUtil.isNetworkAvailable(getApplicationContext());
+    }
+
     @Override
     protected void executeTask() {
       try{
-          billImageUpload.executeDispatch();
-//          long time = System.currentTimeMillis();
+          if (!checkNetwork()){
+              //如果网络不可用
+              dispatchNotifyView.refreshView("请连接网络");
+              return;
+          }
+          fileUploader.executeDispatch();
           UserInfo userInfo = new UserInfo().fetch();
           VehicleInfo vehicleInfo = new VehicleInfo().fetch();
 
@@ -97,11 +105,12 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
           dispatchSyncHelper.sync(userInfo,vehicleInfo);
           dispatchPullHelper.pull(userInfo,vehicleInfo);
           dispatchNotifyView.refreshView(userInfo,vehicleInfo,getNextTime());
-//          Log.d("TMS","本轮结束耗时:"+ (System.currentTimeMillis() - time));
       }catch (Exception e){
           e.printStackTrace();
       }
     }
+
+
 
     @Override
     public void updateDispatch() {
@@ -156,6 +165,4 @@ public class LoopService extends HearServer implements DispatchOperation.Callbac
                 "您好,请检查冷藏箱,温度异常",
                 "点击查看");
     }
-
-
 }

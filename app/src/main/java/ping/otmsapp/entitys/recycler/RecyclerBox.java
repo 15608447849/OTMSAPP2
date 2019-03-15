@@ -15,4 +15,5 @@ public class RecyclerBox {
     public long time;
     //回收箱 同步标识
     public int syncFlag;
+
 }

@@ -2,22 +2,14 @@ package ping.otmsapp.tools;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.util.Arrays;
 
 import ping.otmsapp.log.LLog;
 
@@ -60,8 +52,7 @@ public abstract class LeeApplicationAbs extends Application implements Applicati
      */
     protected void onCreateByAllProgress(String processName) {
                 //日志参数
-                LLog
-                .getBuild()
+                LLog.getBuild()
                 .setLevel(Log.ASSERT)
                 .setDateFormat(TimeUtil.getSimpleDateFormat("[MM/dd HH:mm]"))
                 .setLogFileName(processName+"_"+ TimeUtil.formatUTCByCurrent("MMdd"))
@@ -125,36 +116,36 @@ public abstract class LeeApplicationAbs extends Application implements Applicati
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onCreated");
+//        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onCreated");
     }
 
     @Override
     public void onActivityStarted(Activity activity) {
-        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onStarted");
+//        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onStarted");
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
-        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onResumed");
+//        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onResumed");
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onPaused");
+//        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onPaused");
     }
 
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onSaveInstanceState");
+//        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onSaveInstanceState");
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
-        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onStopped");
+//        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onStopped");
     }
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onDestroyed");
+//        if (isPrintLifeLog) LLog.format("%s :: %s",activity,"onDestroyed");
     }
 }

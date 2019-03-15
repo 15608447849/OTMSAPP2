@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 android {
-    compileSdkVersion 22
+    compileSdkVersion 25
     defaultConfig {
         applicationId "ping.otmsapp"
         minSdkVersion 18
-        targetSdkVersion 22
-        versionCode 9
+        targetSdkVersion 25
+        versionCode 16
         versionName "老百姓运输调度司机终端"
     }
     buildTypes {

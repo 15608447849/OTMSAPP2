@@ -4,26 +4,19 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import java.util.List;
-
 import ping.otmsapp.R;
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.contract.MenuContract;
 import ping.otmsapp.tools.AppUtil;
-import ping.otmsapp.tools.StrUtil;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -114,6 +107,12 @@ public class MenuPopWindow implements MenuContract.View {
                         @Override
                         public void onAction() {
                             if (presenter!=null) presenter.createShortCut();
+                        }
+                    }),
+                    new MenuItem(R.drawable.ic_upload_log, "上传日志", new MenuItem.Callback() {
+                        @Override
+                        public void onAction() {
+                            if (presenter!=null) presenter.uploadLog();
                         }
                     }),
                     new MenuItem(R.drawable.ic_menu_logout, "退出登录", new MenuItem.Callback() {

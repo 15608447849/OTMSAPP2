@@ -19,7 +19,6 @@
         <service android:name="com.amap.api.location.APSService" android:process=":location"/>
         <!--轮询服务 -->
         <service android:name=".server.dispatch.LoopService" android:process=":loop"/>
-
         <!--登录,入口-->
         <activity android:name=".mvp.view.LoginActivity">
             <intent-filter>
@@ -39,6 +38,8 @@
         <activity android:name=".mvp.view.HistoryActivity"/>
         <!--费用-->
         <activity android:name=".mvp.view.CostActivity"/>
+        <!--单页回收-->
+        <activity android:name=".mvp.view.SingeRecycleActivity"/>
 
     </application>
 
@@ -75,5 +76,6 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!--快捷方式-->
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
-
+    <!--授予应用程序访问系统开机/关机等事件的权限-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 </manifest>

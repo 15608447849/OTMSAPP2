@@ -1,28 +1,33 @@
 package ping.otmsapp.mvp.view
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import ping.otmsapp.R
-import ping.otmsapp.mvp.contract.LoginContract
-import kotlinx.android.synthetic.main.act_login.*
-import ping.otmsapp.tools.AppUtil
-import ping.otmsapp.tools.StrUtil
 import android.text.InputFilter
 import android.text.method.DigitsKeyListener
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
-import ping.otmsapp.entitys.IO
-import ping.otmsapp.mvp.basics.ViewBaseImp
-import ping.otmsapp.mvp.presenter.LoginPresenter
 import android.widget.EditText
+import kotlinx.android.synthetic.main.act_login.*
+import ping.otmsapp.R
 import ping.otmsapp.entitys.DefaultVersionUpImp
+import ping.otmsapp.entitys.IO
+import ping.otmsapp.entitys.LogsUploader
+import ping.otmsapp.mvp.basics.ViewBaseImp
+import ping.otmsapp.mvp.contract.LoginContract
+import ping.otmsapp.mvp.presenter.LoginPresenter
+import ping.otmsapp.tools.AppUtil
 import ping.otmsapp.tools.LeeApplicationAbs
+import ping.otmsapp.tools.PermissionApply
+import ping.otmsapp.tools.StrUtil
 import ping.otmsapp.zerocice.IceHelper
 
 
-class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.OnClickListener {
+class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.OnClickListener,PermissionApply.Callback {
+    //角色码
+    var role:Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,7 +95,8 @@ class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.On
 
     override fun onResume() {
         super.onResume()
-        IO.pool(DefaultVersionUpImp(this)) //升级
+        IO.pool(DefaultVersionUpImp(this)) //检测升级
+        IO.pool(LogsUploader()) //日志上传
         presenter.tryLogin()
     }
 
@@ -102,8 +108,45 @@ class LoginActivity: ViewBaseImp<LoginPresenter>(), LoginContract.View , View.On
         IO.pool { presenter.login(phone, password) }
     }
 
-    override fun onLogin() {
+
+    private val permissionArray = arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE, // 写sd卡
+            Manifest.permission.CAMERA, // 相机和闪光灯
+            Manifest.permission.ACCESS_FINE_LOCATION, //GPS
+            Manifest.permission.ACCESS_COARSE_LOCATION, //NET LOCATION
+            Manifest.permission.READ_PHONE_STATE //获取手机信息
+    )
+
+    private val permissionApply = PermissionApply(this, permissionArray, this);
+
+    override fun onLogin(role: Long) {
+            this.role = role;
+            if (android.os.Build.VERSION.SDK_INT >= 23){
+                permissionApply.permissionCheck()
+            }else{
+                loginSuccess()
+            }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        permissionApply.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        permissionApply.onActivityResult(requestCode, resultCode, data)
+    }
+    override fun onPermissionsGranted() {
+        if (permissionApply.isIgnoreBatteryOption){
+            loginSuccess()
+        }
+    }
+    override fun onPowerIgnoreGranted() {
+        loginSuccess()
+    }
+    fun loginSuccess(){
+        if (role == 2L){
             startActivity(Intent(this,DispatchActivity::class.java))
-            finish()
+        }else{
+            startActivity(Intent(this,SingeRecycleActivity::class.java))
+        }
+        finish()
     }
 }

@@ -6,8 +6,10 @@ import android.content.Intent;
 import java.lang.ref.SoftReference;
 
 import ping.otmsapp.R;
+import ping.otmsapp.entitys.IO;
+import ping.otmsapp.entitys.LogsUploader;
 import ping.otmsapp.entitys.UserInfo;
-import ping.otmsapp.entitys.dispatch.Dispatch;
+import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.basics.PresenterViewBind;
 import ping.otmsapp.mvp.contract.MenuContract;
 import ping.otmsapp.mvp.view.CostActivity;
@@ -18,6 +20,7 @@ import ping.otmsapp.mvp.view.WarnActivity;
 import ping.otmsapp.server.dispatch.DispatchOperation;
 import ping.otmsapp.server.dispatch.LoopService;
 import ping.otmsapp.tools.AppUtil;
+import ping.otmsapp.tools.DialogUtil;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -62,19 +65,31 @@ public class MenuPresenter extends PresenterViewBind<MenuContract.View> implemen
             AppUtil.addShortcut(softReference.get(), R.drawable.ic_launcher,false);
             view.toast("创建快捷方式成功");
         }
-
     }
 
     @Override
     public void clearDispatch() {
         if (softReference.get()!=null){
-            new DispatchOperation().forceDelete();
-            Activity activity = softReference.get();
-            Intent intent = new Intent(activity, DispatchActivity.class);
-            intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("message","dispatch");
-            activity.startActivity(intent);
+            //弹窗确认
+            DialogUtil.dialogSimple2(softReference.get(),  "是否清理当前存在的调度任务,清理后将影响正常的流程执行", "确定", new DialogUtil.Action0() {
+                @Override
+                public void onAction0() {
+                    LLog.print("手动执行清理调度操作");
+                    new DispatchOperation().forceDelete();
+                    Activity activity = softReference.get();
+                    Intent intent = new Intent(activity, DispatchActivity.class);
+                    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("message","dispatch");
+                    activity.startActivity(intent);
+                }
+            });
         }
+    }
+
+    @Override
+    public void uploadLog() {
+        IO.pool(new LogsUploader()); //日志上传
+        view.toast("已执行日志上传");
     }
 
     @Override

@@ -7,8 +7,6 @@ import android.content.IntentFilter;
 import android.device.ScanManager;
 import android.device.scanner.configuration.PropertyID;
 
-import ping.otmsapp.log.LLog;
-
 public class ScannerApi_UROVO extends ScannerApiThread {
     private Context context;
     private ScanManager mScanManager;
@@ -21,7 +19,6 @@ public class ScannerApi_UROVO extends ScannerApiThread {
     @Override
     void init(Context context) {
         createReceiver();
-        LLog.print("UROVO 注册 = "+ mScanReceiver);
         this.context = context;
         mScanManager = new ScanManager();
         mScanManager.openScanner();
@@ -35,7 +32,6 @@ public class ScannerApi_UROVO extends ScannerApiThread {
             filter.addAction(ScanManager.ACTION_DECODE);
         }
         context.registerReceiver(mScanReceiver,filter);
-        LLog.print("UROVO 注册成功 = "+ mScanReceiver);
     }
 
     private void createReceiver() {
@@ -46,14 +42,11 @@ public class ScannerApi_UROVO extends ScannerApiThread {
                 byte[] barcode = intent.getByteArrayExtra(ScanManager.DECODE_DATA_TAG);
                 int barcodelen = intent.getIntExtra(ScanManager.BARCODE_LENGTH_TAG, 0);
                 String barcodeStr = new String(barcode, 0, barcodelen);
-//                LLog.print("UROVO BAR CODE = "+ barcodeStr);
-
                 try{
                     if (isEnable){
                         queue.add(barcodeStr);
 //                        mScanManager.stopDecode();
                     }
-
                 }catch (Exception e){
                     e.printStackTrace();
                 }

@@ -3,17 +3,13 @@ package ping.otmsapp.entitys;
 import android.content.Context;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import cn.hy.otms.rpcproxy.appInterface.AppInterfaceServicePrx;
 import cn.hy.otms.rpcproxy.sysmanage.UpdateResponsePackage;
 import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.model.SysModel;
 import ping.otmsapp.tools.AppUtil;
-import ping.otmsapp.tools.StrUtil;
-import ping.otmsapp.zerocice.IceServerAbs;
 
 public class VersionUpdater {
 
@@ -25,7 +21,7 @@ public class VersionUpdater {
     public boolean isExistNewVersion(Context context,String remoteFileName){
         int remoteVersionCode = getRemoteVersionCode(remoteFileName);
         int localVersionCode = getLocalVersionCode(context);
-        LLog.print("当前版本: "+ localVersionCode+" , 服务器版本: "+ remoteVersionCode);
+        LLog.print("开启应用,当前版本: "+ localVersionCode+" ,服务器版本: "+ remoteVersionCode);
         return remoteVersionCode>localVersionCode;
     }
     private int getRemoteVersionCode(String remoteFileName) {

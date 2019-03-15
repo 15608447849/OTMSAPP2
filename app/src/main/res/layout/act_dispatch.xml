@@ -73,7 +73,7 @@
             android:layout_toEndOf="@id/tv_drop_down"
             />
     </RelativeLayout>
-    <!-- 操作区-->
+    <!-- 操作区 -->
     <LinearLayout
         android:id="@+id/rl_dispatch_area"
         android:layout_width="match_parent"
@@ -83,6 +83,12 @@
         android:visibility="gone">
         <include layout="@layout/inc_input_code"/>
         <include layout="@layout/inc_dispatch_button"/>
+        <CheckBox
+            android:id="@+id/cb_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="勾选将对装货中已扫码的货物进行取消"
+            />
     </LinearLayout>
     <!-- 操作区收起按钮 -->
     <RelativeLayout

@@ -10,26 +10,25 @@ import cn.hy.otms.rpcproxy.appInterface.WarnsInfo;
 import cn.hy.otms.rpcproxy.comm.cstruct.BoolMessage;
 import ping.otmsapp.entitys.except.Abnormal;
 import ping.otmsapp.entitys.recycler.RecyclerBox;
+import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.contract.CostContract;
 import ping.otmsapp.mvp.contract.HistoryContract;
+import ping.otmsapp.mvp.contract.SingeRecycleContract;
 import ping.otmsapp.mvp.contract.WarnContract;
 import ping.otmsapp.tools.JsonUtil;
 import ping.otmsapp.zerocice.IceServerAbs;
 
-public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model,HistoryContract.Model,CostContract.Model {
-
-
-
+public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> implements WarnContract.Model,HistoryContract.Model,CostContract.Model, SingeRecycleContract.Model {
     /**
      * 获取调度信息
      */
     public DispatchInfo dispatchInfoSync(final int userid, final String schedth){
         try{
-            printParam("获取调度单",userid,schedth);
+            //printParam("获取调度单",userid,schedth);
             //用户码
             return getProxy().heartbeatByDriverC(convert(userid,schedth));
         }catch (Exception e){
-           e.printStackTrace();
+           LLog.print(e);
         }
         return null;
     }
@@ -41,7 +40,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public BoolMessage changeBoxStateSync(long schedth, final String cusid, String boxNo, int state, long time){
         try{
-            printParam("修改箱子状态",schedth,boxNo,state);
+            printParam("修改箱子状态",schedth,boxNo,state,time);
             //状态,箱号,调度车次,机构码, 装载或者卸货对应的时间
             return getProxy().updateBoxStatus(convert(
                     state,
@@ -50,7 +49,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
                     cusid,
                     time));
         }catch (Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -60,11 +59,11 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public BoolMessage changeDispatchStateSync(final long schedtn,final String userid, final int state,final long time){
         try{
-            printParam("改变调度状态",schedtn,userid,state);
+            printParam("改变调度状态",schedtn,userid,state,time);
             //车次号,用户码,状态,修改时间
             return getProxy().updateSchedvechStatus(convert(schedtn,userid,state,time));
         }catch (Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -77,7 +76,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
             printParam("改变车辆状态",vechid,status);
             return getProxy().updateVehStatus(convert(schedtn,vechid,status));
         }catch (Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -89,7 +88,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public int addTrail(final long schedtn,final String vechid,String traceJson,int flag,int state){
         try{
-            printParam("传送轨迹",schedtn,vechid,"轨迹点:" + flag,"状态码:"+state );
+            printParam("传送轨迹",schedtn,vechid," 轨迹点:" + flag,"状态码:"+state );
             //车次号,车牌号,轨迹点数,轨迹json,状态码
             return getProxy().addTrail(convert(
                     schedtn,
@@ -99,7 +98,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
                     state
             ));
         }catch (Exception e){
-           e.printStackTrace();
+           LLog.print(e);
         }
         return  -1;
     }
@@ -119,7 +118,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
                     abnormal.handlerUserCode, abnormal.handleCustomerAgency,abnormal.handlerTime,abnormal.handlerRemakes
             ));
         }catch (Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -130,7 +129,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public BoolMessage updateRecycleBoxSync(RecyclerBox recyclerBox){
         try{
-            printParam("正常回收箱", JsonUtil.javaBeanToJson(recyclerBox));
+            printParam("回收箱-正常扫码", JsonUtil.javaBeanToJson(recyclerBox));
             //调度车次,用户码,箱号,回收类型,回收时间,回收时门店ID
             return getProxy().updateRecycle(convert(
                     recyclerBox.carNumber,
@@ -141,7 +140,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
                     recyclerBox.storeId
             ));
         }catch (Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -152,17 +151,17 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public BoolMessage updateRecycleBoxNumberSync(final long schedtn,final String cusid,final int backTypeNum,final int transferTypeNumber,final long time) {
         try{
-            printParam("回收-纸箱",schedtn,cusid,backTypeNum,transferTypeNumber,time);
+            printParam("回收箱-手输纸箱",schedtn,cusid,backTypeNum,transferTypeNumber,time);
             //调度车次,用户码,箱号,回收类型,回收时间
             return getProxy().grade(convert(
                     schedtn,
                     cusid,
-                    backTypeNum,
                     transferTypeNumber,
+                    backTypeNum,
                     time
             ));
         }catch (Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -172,10 +171,10 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
      */
     public WarnsInfo queryTimeLaterWarnInfoByDriver(long trainNo, long time){
         try {
-            printParam("预警数据",trainNo,time);
+            printParam("获取预警数据",trainNo,time);
             return getProxy().queryWarnsInfo(convert("TimeLater",2,time,trainNo));
         } catch (Exception e) {
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -183,10 +182,10 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
     @Override
     public boolean handleWarn(String codeBar,long time){
         try {
-            printParam("处理预警",codeBar,time);
+            printParam("处理预警数据",codeBar,time);
             return getProxy().updateWarnState(convert(codeBar,time));
         } catch (Exception e) {
-            e.printStackTrace();
+            LLog.print(e);
         }
         return false;
     }
@@ -195,10 +194,10 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
     @Override
     public AppSchedvech[] getHistoryTask(int userId, String y_m_d) {
         try {
-            printParam("获取当前用户历史任务",userId,y_m_d);
+            printParam("获取历史任务",userId,y_m_d);
             return  getProxy().queryVechInfoPage(convert(userId,y_m_d));
         } catch (Exception e) {
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -209,7 +208,7 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
             printParam("获取运费账单",userId,y_m_d);
             return  getProxy().appSureFeeInfo(convert(userId,y_m_d));
         } catch (Exception e) {
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -221,13 +220,13 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
             BoolMessage boolMessage = getProxy().updateFeeStatu(convert(train,opCode,userId,System.currentTimeMillis()));
             return boolMessage.flag;
         } catch (Exception e) {
-            e.printStackTrace();
+            LLog.print(e);
         }
         return false;
     }
 
     @Override
-    public boolean uploadImage(File image, String serverFilePath, String serverFileName) {
+    public boolean uploadFile(File image, String serverFilePath, String serverFileName) {
         //node
         return false;
     }
@@ -239,11 +238,21 @@ public class AppInterfaceModel extends IceServerAbs<AppInterfaceServicePrx> impl
             BoolMessage boolMessage = getProxy().addBackCard(convert(despatchId,storeId,fileName));
             return boolMessage.flag;
         } catch (Exception e) {
-            e.printStackTrace();
+            LLog.print(e);
         }
         return false;
     }
 
-
-
+    @Override
+    public boolean uploadSingeRecycle(String boxCode, String name, int code) {
+        try {
+            printParam("单页回收上传箱号",boxCode,name,code);
+            //调度车次、门店编码、文件名
+            BoolMessage boolMessage = getProxy().appDrtRecy(convert(boxCode,name,code));
+            return boolMessage.flag;
+        } catch (Exception e) {
+            LLog.print(e);
+        }
+        return false;
+    }
 }

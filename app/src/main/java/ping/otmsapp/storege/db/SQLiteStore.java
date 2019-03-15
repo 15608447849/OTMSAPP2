@@ -23,18 +23,17 @@ public class SQLiteStore implements Closeable {
         return Holder.DB_STORE;
     }
 
-    private boolean isInit;
 
     private void checkInit(){
-        if (!isInit) throw new IllegalStateException("未初始化数据库对象");
+        if (sql==null) throw new IllegalStateException("未初始化数据库对象");
     }
 
-    private LocalSql sql = new LocalSql();
+    private LocalSql sql;
 
     public void init(Context context){
-        if (isInit) return;
+        if (sql!=null) return;
+        sql = new LocalSql();
         sql.init(context);
-        isInit = true;
     }
 
 

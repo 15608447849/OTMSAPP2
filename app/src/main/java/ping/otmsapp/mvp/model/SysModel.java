@@ -5,6 +5,7 @@ import cn.hy.otms.rpcproxy.sysmanage.SysManageServicePrx;
 import cn.hy.otms.rpcproxy.sysmanage.UpdateRequestPackage;
 import cn.hy.otms.rpcproxy.sysmanage.UpdateResponsePackage;
 import cn.hy.otms.rpcproxy.sysmanage.UserGlobalInfo;
+import ping.otmsapp.log.LLog;
 import ping.otmsapp.mvp.contract.LoginContract;
 import ping.otmsapp.zerocice.IceServerAbs;
 
@@ -12,17 +13,15 @@ public class SysModel extends IceServerAbs<SysManageServicePrx> implements Login
 
     /**
      *  用户登陆
+     *  2 司机
      */
     @Override
     public UserGlobalInfo login(String phone,String password){
         try {
             printParam("用户登陆",phone,password);
-            UserGlobalInfo userGlobalInfo = getProxy().loginCS(phone,password);
-            if (userGlobalInfo.roleid == 2){
-                return userGlobalInfo;
-            }
+            return getProxy().loginCS(phone,password);
         }catch(Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
@@ -41,8 +40,9 @@ public class SysModel extends IceServerAbs<SysManageServicePrx> implements Login
             updateRequestPackage.OS = 2;
             return getProxy().getVersionPackage(updateRequestPackage);
         }catch(Exception e){
-            e.printStackTrace();
+            LLog.print(e);
         }
         return null;
     }
+
 }

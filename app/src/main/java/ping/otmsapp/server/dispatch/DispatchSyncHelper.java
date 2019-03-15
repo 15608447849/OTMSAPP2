@@ -1,7 +1,5 @@
 package ping.otmsapp.server.dispatch;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,9 +24,9 @@ import ping.otmsapp.entitys.map.TraceSync;
 import ping.otmsapp.entitys.recycler.RecyclerBox;
 import ping.otmsapp.entitys.recycler.RecyclerBoxList;
 import ping.otmsapp.entitys.recycler.RecyclerBoxListSync;
+import ping.otmsapp.entitys.recycler.RecyclerCarton;
 import ping.otmsapp.entitys.warn.WarnItem;
 import ping.otmsapp.entitys.warn.WarnList;
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.tools.JsonUtil;
 import ping.otmsapp.tools.StrUtil;
 
@@ -47,7 +45,6 @@ public class DispatchSyncHelper extends DispatchOperation{
 
     public void sync(UserInfo userInfo, final VehicleInfo vehicleInfo){
         if (userInfo == null || vehicleInfo == null) return;
-
         try {
 
             //轨迹同步
@@ -62,14 +59,10 @@ public class DispatchSyncHelper extends DispatchOperation{
             IO.queue(new Runnable() {
                 @Override
                 public void run() {
-                    if (isWarning) return;
-                    isWarning = true;
                     //预警信息同步
                     syncWarn(vehicleInfo);
-                    isWarning = false;
                 }
             });
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,21 +72,20 @@ public class DispatchSyncHelper extends DispatchOperation{
 
     //预警信息同步
     private void syncWarn(VehicleInfo vehicleInfo) {
+        if (isWarning) return;
+        isWarning = true;
 
         Dispatch dispatch = new Dispatch().fetch();
 
         if(dispatch == null) return;
 
-        if (dispatch.state <= Dispatch.STATE.TAKEOUT || dispatch.state >= Dispatch.STATE.BACK){
-            return;
-        }
+        if (dispatch.state <= Dispatch.STATE.TAKEOUT || dispatch.state >= Dispatch.STATE.BACK) return;
+
         WarnList warnTag = new WarnList().fetch();
 
         if (warnTag==null) return;
 
-//        Log.d("TMS","预警开始访问接口");
         WarnsInfo warnsInfo = server.queryTimeLaterWarnInfoByDriver(vehicleInfo.carNumber,warnTag.timeStamp);
-//        Log.d("TMS","预警结束访问接口");
 
         warnTag = warnTag.fetch(); //再次判断避免当前已不存在预警
 
@@ -154,11 +146,10 @@ public class DispatchSyncHelper extends DispatchOperation{
 
             if (isNotify) {
                 warnTag.save();
-                LLog.print(JsonUtil.javaBeanToJson(warnTag));
                 if (callback!=null) callback.notifyWarn();
             }
-//            Log.d("TMS","预警本地处理结束");
         try { Thread.sleep( 30 * 1000 );  } catch (InterruptedException ignored) { }
+        isWarning = false;
     };
 
     //执行调度单同步
@@ -456,6 +447,17 @@ public class DispatchSyncHelper extends DispatchOperation{
     private void syncRecycle() {
         RecyclerBoxList recyclerBoxList = new RecyclerBoxList().fetch();
         RecyclerBoxListSync recyclerBoxListSync = new RecyclerBoxListSync().fetch();
+        if(recyclerBoxList!=null && recyclerBoxList.list2!=null){
+            //同步纸箱
+            for (RecyclerCarton carton : recyclerBoxList.list2){
+                server.updateRecycleBoxNumberSync(
+                        carton.carNumber,
+                        carton.storeId,
+                        carton.backCartonNum,
+                        carton.adjustCartonNum,
+                        carton.time);
+            }
+        }
 
         if (recyclerBoxList!=null && recyclerBoxList.list!=null && recyclerBoxList.list.size() > 0 && recyclerBoxListSync!=null){
             boolean isSave =false;
@@ -473,26 +475,14 @@ public class DispatchSyncHelper extends DispatchOperation{
             while (it.hasNext()){
                 temp = it.next();
                 recyclerBox = recyclerBoxList.list.get(index);
-//                LLog.print("同步回收箱: "+JsonUtil.javaBeanToJson(recyclerBox));
                 if (recyclerBox.syncFlag != temp){
-
-                        if (!recyclerBox.boxNo.equals("")){ //不是空箱号
-                            //确定同步
-                            boolMessage = server.updateRecycleBoxSync(recyclerBox);
-                        }else{
-                            boolMessage = server.updateRecycleBoxNumberSync(
-                                    recyclerBox.carNumber,
-                                    recyclerBox.storeId,
-                                    recyclerBox.type == 2?1:0,
-                                    recyclerBox.type == 3?1:0,
-                                    recyclerBox.time
-                            );
-                        }
+                    if (recyclerBox.boxNo.equals("")) continue;
+                        //确定同步
+                        boolMessage = server.updateRecycleBoxSync(recyclerBox);
                         if (checkBoolMessage()){
                             it.set(recyclerBox.syncFlag);
                             isSave = true;
                         }
-
                 }
                 index++;
             }

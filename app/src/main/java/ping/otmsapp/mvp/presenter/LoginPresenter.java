@@ -16,25 +16,22 @@ public class LoginPresenter extends PresenterViewBind<LoginContract.View> implem
     @Override
     public void tryLogin() {
         if (isBindView() && userInfo!=null) {
-            view.onLogin();
+            view.onLogin(userInfo.roleCode);
         }
     }
 
     @Override
-    public void login(String phone, String password) {
+    public void login(String username, String password) {
         if (!isBindView()) return;
 
-        if (StrUtil.validate(phone) && StrUtil.validate(password)){
-            if (phone.length()!=11){
-                view.toast("手机号码格式不正确");
-                return;
-            }
+        if (StrUtil.validate(username) && StrUtil.validate(password)){
+
             if (password.length()<6){
                 view.toast("密码长度不正确");
                 return;
             }
            view.showProgressBar();
-            UserGlobalInfo info = model.login(phone, MD5Util.encryption(password));
+            UserGlobalInfo info = model.login(username, MD5Util.encryption(password));
             view.hindProgressBar();
             if (info == null){
                 view.toast("登录失败,请检查手机号码或密码是否正确");
@@ -42,9 +39,10 @@ public class LoginPresenter extends PresenterViewBind<LoginContract.View> implem
             }
             userInfo = new UserInfo();
                 userInfo.id = info.userid;
-                userInfo.phone = phone;
                 userInfo.name = info.realname;
                 userInfo.compName = info.compname;
+                userInfo.roleCode = info.roleid;
+                userInfo.roleName = info.realname;
             userInfo.save();
             tryLogin();
         }else{

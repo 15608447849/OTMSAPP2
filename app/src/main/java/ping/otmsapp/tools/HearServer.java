@@ -8,8 +8,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import ping.otmsapp.log.LLog;
-
 /**
  * Created by Leeping on 2018/5/2.
  * email: 793065165@qq.com
@@ -28,7 +26,7 @@ public abstract class HearServer extends Service implements Runnable {
 
     private volatile boolean isRun = true;
 
-    private long interval = 5 * 1000L;
+    private long interval = 15 * 1000L;
 
     public void setInterval(long interval) {
         this.interval = interval;

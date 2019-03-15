@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/dp10"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp10"
+        android:background="@android:color/darker_gray"
+        >
+        <!--  当前信息 -->
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="@dimen/dp0"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="当前用户: 李克强"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:gravity="center"
+            />
+        <TextView
+            android:id="@+id/tv_user_code"
+            android:layout_width="@dimen/dp0"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="编码: 10086"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:gravity="center"
+            />
+        <ImageButton
+            android:id="@+id/tv_btn_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu_exit"
+            android:background="@null" />
+    </LinearLayout>
+    <include layout="@layout/inc_input_code"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="@dimen/dp0"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="已扫描回收箱数量↓↓↓"
+            android:textSize="20sp"
+            android:textColor="@android:color/darker_gray"
+            />
+        <Button
+            android:id="@+id/btn_code_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上     传"
+            android:background="@drawable/ic_btn_bg_click_select"
+            />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_box_num"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="66"
+        android:gravity="center"
+        android:textSize="150sp"
+        android:textColor="@android:color/holo_orange_light"
+        />
+</LinearLayout>

@@ -52,7 +52,7 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
         mMonth = ca.get(Calendar.MONTH);
         mDay = ca.get(Calendar.DAY_OF_MONTH);
 
-        tv_name_sub.setOnClickListener {
+        /*tv_name_sub.setOnClickListener {
             //日期选择
             DialogUtil.createSimpleDateDialog(this, mYear, mMonth, mDay) { view, year, monthOfYear, dayOfMonth ->
                 mYear = year;
@@ -60,7 +60,7 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
                 mDay = dayOfMonth;
                 refreshList()
             }
-        }
+        }*/
 
         adapter = CostListAdapter(this)
 
@@ -107,7 +107,7 @@ class CostActivity: ViewBaseImp<CostPresenter>(),CostContract.View{
 
     override fun updateDataText(text: String) {
         runOnUiThread{
-            tv_name_sub.text = text
+            //tv_name_sub.text = text
         }
     }
 

@@ -25,8 +25,7 @@ import ping.otmsapp.entitys.UserInfo
 import ping.otmsapp.entitys.dispatch.Box
 import ping.otmsapp.entitys.dispatch.Dispatch
 import ping.otmsapp.entitys.scanner.ScannerCallback
-import ping.otmsapp.entitys.upload.BillImage
-import ping.otmsapp.log.LLog
+import ping.otmsapp.entitys.upload.FileUploadItem
 import ping.otmsapp.mvp.basics.ViewBaseImp
 import ping.otmsapp.mvp.contract.DispatchContract
 import ping.otmsapp.mvp.contract.MenuContract
@@ -52,7 +51,8 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
     private var mediaUse:MediaUse? = null
 
     private var tempFile : File? = null
-    private var billImage : BillImage? = null
+
+    private var billImage : FileUploadItem? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -146,7 +146,7 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
 
             val name = v.findViewById(R.id.tv_user_name) as TextView
             val id = v.findViewById(R.id.tv_user_id) as TextView
-            val phone = v.findViewById(R.id.tv_user_phone) as TextView
+            val role = v.findViewById(R.id.tv_user_role) as TextView
             val comp = v.findViewById(R.id.tv_user_comp) as TextView
 
             val builder = AlertDialog.Builder(this)
@@ -155,17 +155,15 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
             dialog.show()
 
             val user = UserInfo().fetch<UserInfo>()
-
             name.text = user.name
             id.text = user.id.toString()
-            phone.text = user.phone
+            role.text = user.roleName
             comp.text = user.compName
-
         }
-
+        cb_cancel.setOnCheckedChangeListener{ v,isChecked->
+            presenter.setLoadCache(isChecked)
+        }
     }
-
-
 
     //上传回单
     private fun uploadReceipt(position: Int) {
@@ -177,9 +175,11 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
                     return
                 }
             }
-            billImage = BillImage()
-            billImage?.path = tempFile?.canonicalPath
-            billImage?.storeId = adapter?.getItem(position)?.customerAgency
+            billImage = FileUploadItem(1)
+            //门店编号
+            billImage?.param!!["storeId"] = adapter?.getItem(position)?.customerAgency
+            billImage?.localFullPath = tempFile?.canonicalPath
+
             openSelectPictureDialog()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -277,12 +277,17 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
             }
             cancel.setOnClickListener(onClickListener)
             upload.setOnClickListener(onClickListener)
-
         }
     }
 
-    //显示箱号详情并选中
+    //显示箱号详情
     private fun showDetailDialog(position: Int) {
+        //判断是否勾选
+        if(position != adapter?.index ){
+            toast("请对门店进行勾选再操作")
+            return
+        }
+
         val dispatch = adapter?.dispatch
 
         val store = dispatch!!.storeList!![position]
@@ -292,8 +297,14 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         //等待装货箱号
         for (i in boxList!!.indices) {
             val box = boxList[i]
-            if (dispatch.state == Dispatch.STATE.LOAD && box.state == Box.STATE.LOAD){
-                list.add(box.barCode)
+
+            if (dispatch.state == Dispatch.STATE.LOAD){
+                if(!cb_cancel.isChecked  && box.state == Box.STATE.LOAD){
+                    list.add(box.barCode)
+                }else if (cb_cancel.isChecked && box.state == Box.STATE.UNLOAD){
+                    list.add(box.barCode)
+                }
+
             }else if (dispatch.state == Dispatch.STATE.UNLOAD && box.state == Box.STATE.UNLOAD){
                 list.add(box.barCode)
             }
@@ -354,7 +365,6 @@ class DispatchActivity: ViewBaseImp<DispatchPresenter>(), RadioGroup.OnCheckedCh
         runOnUiThread{
             adapter?.dispatch = Dispatch().fetch()
             adapter?.notifyDataSetChanged()
-            //LLog.print("更新调度单\n"+ JsonUtil.javaBeanToJson(adapter?.dispatch))
             tv_state.text = when(adapter?.dispatch?.state){
                 Dispatch.STATE.LOAD -> "装载总进度:[${adapter?.dispatch?.loadScanBoxIndex}/${adapter?.dispatch?.storeBoxSum}]"
                 Dispatch.STATE.TAKEOUT -> "等待启程出发"

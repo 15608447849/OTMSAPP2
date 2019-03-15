@@ -10,8 +10,6 @@ import com.lmax.disruptor.dsl.ProducerType;
 
 import java.util.concurrent.ThreadFactory;
 
-import ping.otmsapp.log.LLog;
-
 public class IOThreadDisruptor implements IOInterface{
     private static class RunnableEvent {
         Runnable runnable;
@@ -24,7 +22,7 @@ public class IOThreadDisruptor implements IOInterface{
         public void onEvent(RunnableEvent runnableEvent, long sequence, boolean endOfBatch){
 
             if (runnableEvent.runnable == null) return;
-            LLog.print(this+" - "+sequence);
+
             try {
                 runnableEvent.runnable.run();
             }catch (Exception e){
@@ -40,7 +38,7 @@ public class IOThreadDisruptor implements IOInterface{
         @Override
         public void onEvent(RunnableEvent runnableEvent) throws Exception {
             if (runnableEvent.runnable == null) return;
-//            LLog.print(this.hashCode() +" - "+runnableEvent);
+
             try {
                 runnableEvent.runnable.run();
             }catch (Exception e){

@@ -1,16 +1,22 @@
 package ping.otmsapp;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import java.io.IOException;
+
 import ping.otmsapp.entitys.scanner.ScannerApiThread;
+import ping.otmsapp.entitys.scanner.ScannerApi_SEUIC;
 import ping.otmsapp.entitys.scanner.ScannerApi_UROVO;
 import ping.otmsapp.entitys.scanner.ScannerCallback;
-import ping.otmsapp.entitys.scanner.ScannerApi_SEUIC;
+import ping.otmsapp.log.LLog;
 import ping.otmsapp.server.dispatch.LoopService;
 import ping.otmsapp.storege.db.SQLiteStore;
 import ping.otmsapp.tools.AppUtil;
@@ -22,26 +28,51 @@ public class ApplicationInitialization extends LeeApplicationAbs{
 
     //活跃的activity
     private int activeCount= 0;
+    //扫描API线程实现
     private ScannerApiThread scannerApiThread = null;
-
+    //关机广播
+    private BroadcastReceiver devBootBroad;
     @Override
     protected void onCreateByAllProgress(String processName) {
         if (processName.contains(":location")) return;
         super.onCreateByAllProgress(processName);
         SQLiteStore.get().init(getApplicationContext());
-        //添加网络状态过滤器
+        //添加关机检测广播
+        regDevBootBroad();
+        //设置服务器信息
+        settingServerInfo();
+    }
+
+    private void settingServerInfo() {
         IceHelper.get().addFilter(new IceHelper.IFilter() {
             @Override
             public void filter() throws Exception {
                 if (!AppUtil.isNetworkAvailable(getApplicationContext()))
-                    throw new IllegalStateException("网络无效.");
+                    throw new IllegalStateException("网络不可用");
             }
         });
 
-        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "222.240.233.154", 4061);
+//        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "222.240.233.154", 4061);
+        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "58.20.41.72", 4061);
 //        IceHelper.get().initBySharedPreference(getApplicationContext(),"LBXTMS", "192.168.1.120", 4061);
     }
 
+    private void regDevBootBroad() {
+        devBootBroad = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                try {
+                    SQLiteStore.get().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                LLog.print("设备关机广播");
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SHUTDOWN);
+        getApplicationContext().registerReceiver(devBootBroad,intentFilter);//注册关机广播
+    }
 
     @Override
     protected void onCreateByApplicationMainProgress(String processName) {
@@ -50,7 +81,7 @@ public class ApplicationInitialization extends LeeApplicationAbs{
     }
 
     private void initScannerApi() {
-        if (android.os.Build.VERSION.SDK_INT == 22){
+        if (android.os.Build.VERSION.SDK_INT >= 22){
             scannerApiThread = new ScannerApi_SEUIC(this);
         }else if (android.os.Build.VERSION.SDK_INT == 18){
             scannerApiThread = new ScannerApi_UROVO(this);

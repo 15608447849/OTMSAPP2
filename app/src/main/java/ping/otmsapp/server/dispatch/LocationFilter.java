@@ -6,7 +6,6 @@ import com.amap.api.maps.model.LatLng;
 
 import ping.otmsapp.entitys.map.MTraceLocation;
 import ping.otmsapp.entitys.tuples.Tuple2;
-import ping.otmsapp.log.LLog;
 
 public class LocationFilter {
 
@@ -64,12 +63,14 @@ public class LocationFilter {
             return null;
         }
 
+
         final float cDistance = AMapUtils.calculateLineDistance(getCurLatLng(),getPrevLatLng());//距离改变量,单位米
 
-        final float cBearing = Math.abs(getCurBearing() - getPrevBearing());//角度改变量
+//        final float cBearing = Math.abs(getCurBearing() - getPrevBearing());//角度改变量
 
         //如果角度改变量过小 并且 速度改变量过小
-        if ( (cDistance > curtLoc.getAccuracy()  && cBearing < 45 ) || (cDistance <curtLoc.getAccuracy() && (cBearing > 30 && cBearing < 60))  ){
+//        if ( (cDistance > curtLoc.getAccuracy()  && cBearing < 45 ) || (cDistance <curtLoc.getAccuracy() && (cBearing > 30 && cBearing < 60))  ){
+        if (cDistance>100){
             MTraceLocation mTraceLocation = new MTraceLocation(
                     curtLoc.getLatitude(),//径度
                     curtLoc.getLongitude(),//维度
@@ -77,7 +78,6 @@ public class LocationFilter {
                     curtLoc.getBearing(),//角度
                     curtLoc.getTime());
             prevLoc = curtLoc;
-            LLog.print("记录轨迹点"+mTraceLocation.toString());
             return new Tuple2<>(mTraceLocation, cDistance);
         }
         return null;

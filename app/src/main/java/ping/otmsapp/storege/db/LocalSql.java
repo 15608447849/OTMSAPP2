@@ -5,11 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-
 import java.io.Closeable;
-import java.io.IOException;
 
-import ping.otmsapp.log.LLog;
 import ping.otmsapp.storege.inf.ICacheMap;
 
 /**
@@ -80,34 +77,42 @@ public class LocalSql implements ICacheMap<String,String>,Closeable {
     @Override
     public void putValue(String k, String v) {
         if (sqLiteOpenHelper==null) return;
-        final String value  = getValue(k);
-//        LLog.print(k+" = "+ value);
-        StringBuffer  sql = new StringBuffer ();
-        if (value==null){
-            sql.append(
-                   String.format("insert into %s(%s,%s) values('%s','%s')",
-                           SqlTableInfo.dbTableName, SqlTableInfo.tableKey, SqlTableInfo.tableValue,k,v
-                    )
-            );
-        }else{
-            sql.append(
-                    String.format("update %s set %s = '%s' where %s = '%s'",
-                            SqlTableInfo.dbTableName, SqlTableInfo.tableValue,v, SqlTableInfo.tableKey,k
-                    ));
+        sqLiteOpenHelper.getWritableDatabase().beginTransaction();
+        try {
+            final String value  = getValue(k);
+
+            StringBuffer  sql = new StringBuffer ();
+            if (value==null){
+                sql.append(
+                       String.format("insert into %s(%s,%s) values('%s','%s')",
+                               SqlTableInfo.dbTableName, SqlTableInfo.tableKey, SqlTableInfo.tableValue,k,v
+                        )
+                );
+            }else{
+                sql.append(
+                        String.format("update %s set %s = '%s' where %s = '%s'",
+                                SqlTableInfo.dbTableName, SqlTableInfo.tableValue,v, SqlTableInfo.tableKey,k
+                        ));
+            }
+            sqLiteOpenHelper.getWritableDatabase().execSQL(sql.toString());
+            sqLiteOpenHelper.getWritableDatabase().setTransactionSuccessful();
+        } finally {
+            sqLiteOpenHelper.getWritableDatabase().endTransaction();
         }
-//        LLog.print(k+" = "+ v);
-        sqLiteOpenHelper.getWritableDatabase().execSQL(sql.toString());
     }
 
     @Override
     public void removeKey(String k) {
         if (sqLiteOpenHelper==null) return;
-//        LLog.print("删除K = "+ k);
-        sqLiteOpenHelper.getWritableDatabase().delete(SqlTableInfo.dbTableName, SqlTableInfo.dbSelectionWhere,new String[]{k});
+        sqLiteOpenHelper.getWritableDatabase().delete(
+                SqlTableInfo.dbTableName,
+                SqlTableInfo.dbSelectionWhere,
+                new String[]{k}
+                );
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (sqLiteOpenHelper!=null) sqLiteOpenHelper.close();
         sqLiteOpenHelper = null;
     }

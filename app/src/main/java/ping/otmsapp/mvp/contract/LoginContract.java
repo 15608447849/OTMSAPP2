@@ -10,10 +10,10 @@ public class LoginContract {
         UserGlobalInfo login(String phone,String password);
     }
     public interface View extends IView{
-        void onLogin();
+        void onLogin(long role);
     }
     public interface Presenter extends IPresenter<View>{
         void tryLogin();
-        void login(String phone, String password);
+        void login(String username, String password);
     }
 }

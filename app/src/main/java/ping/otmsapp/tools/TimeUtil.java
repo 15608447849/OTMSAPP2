@@ -70,15 +70,11 @@ public class TimeUtil {
     }
     // 秒 转化 小时 ,分钟
     public static String formatSec(long sec){
-//        Log.w("格式化时间",sec+"");
         long hour,minute,second;
         second = sec;
         hour = second/3600;
-//        Log.w("格式化时间","小时:"+hour);
         minute = (second - hour*3600)/60;
-//        Log.w("格式化时间","分钟:"+minute);
         second = (second-hour*3600)-(minute*60);
-//        Log.w("格式化时间","秒:"+second);
         StringBuilder sb = new StringBuilder();
         if (hour>0){
             sb.append(hour).append("小时");
